@@ -1,0 +1,1 @@
+ cargo build  -Z build-std --target riscv32imfc-unknown-none-elf.json && flash.bat

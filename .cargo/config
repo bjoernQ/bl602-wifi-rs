@@ -1,0 +1,14 @@
+[target.riscv32imfc-unknown-none-elf]
+rustflags = [
+  "-C", "link-arg=-Tmemory.x",
+#  "-C", "link-arg=-Tlink.x",
+  "-C", "link-arg=-Thal_defaults.x",
+
+  "-C", "link-arg=-L",
+  "-C", "link-arg=./libs/",
+  "-C", "link-arg=-lbl602_wifi",
+]
+runner = "cargo blflash --port=/dev/ttyUSB0"
+
+[build]
+target = "riscv32imfc-unknown-none-elf"
