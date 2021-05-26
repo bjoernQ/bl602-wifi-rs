@@ -1,7 +1,7 @@
 use embedded_time::duration::Milliseconds;
 
 use crate::{binary::c_types::c_void, compat::get_time, log, print};
-use core::fmt::Write;
+use core::{ffi::VaListImpl, fmt::Write};
 
 use super::queue::SimpleQueue;
 
@@ -94,87 +94,14 @@ impl Write for StrBuf {
 pub unsafe extern "C" fn syslog(_priority: u32, mut args: ...) {
     log!("syslog called");
 
-    let fmt_str_ptr = args.arg::<*const u8>();
-
-    let mut res_str = StrBuf::new();
-
-    let strbuf = StrBuf::from(fmt_str_ptr);
-    let s = strbuf.as_str_ref();
-
-    let mut format_char = ' ';
-    let mut is_long = false;
-    let mut found = false;
-    for c in s.chars().into_iter() {
-        if found && format_char != ' ' {
-            // have to format an arg
-            match format_char {
-                'd' => {
-                    if is_long {
-                        let v = args.arg::<i32>();
-                        write!(res_str, "{}", v).ok();
-                    } else {
-                        let v = args.arg::<i32>();
-                        write!(res_str, "{}", v).ok();
-                    }
-                }
-
-                'u' => {
-                    let v = args.arg::<u32>();
-                    write!(res_str, "{}", v).ok();
-                }
-
-                'p' => {
-                    let v = args.arg::<u32>();
-                    write!(res_str, "0x{:x}", v).ok();
-                }
-
-                'X' => {
-                    let v = args.arg::<u32>();
-                    write!(res_str, "{:2x}", v).ok();
-                }
-
-                'x' => {
-                    let v = args.arg::<u32>();
-                    write!(res_str, "{:2x}", v).ok();
-                }
-
-                's' => {
-                    let v = args.arg::<u32>() as *const u8;
-                    let vbuf = StrBuf::from(v);
-                    write!(res_str, "{}", vbuf.as_str_ref()).ok();
-                }
-
-                _ => {
-                    write!(res_str, "<UNKNOWN{}>", format_char).ok();
-                }
-            }
-
-            format_char = ' ';
-            found = false;
-            is_long = false;
-        }
-
-        if !found {
-            if c == '%' {
-                found = true;
-            }
-
-            if !found {
-                res_str.append_char(c);
-            }
-        } else {
-            if c.is_numeric() || c == '-' || c == 'l' {
-                if c == 'l' {
-                    is_long = true;
-                }
-                // ignore
-            } else {
-                // a format char
-                format_char = c;
-            }
-        }
-    }
-
+    let mut buf = [0u8; 512];
+    vsnprintf(
+        &mut buf as *mut u8,
+        511,
+        args.arg::<u32>() as *const u8,
+        args,
+    );
+    let res_str = StrBuf::from(&buf as *const u8);
     print!("{}", res_str.as_str_ref());
 }
 
@@ -549,11 +476,13 @@ pub unsafe extern "C" fn strlen(s: *const u8) -> i32 {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn snprintf(dst: *mut u8, n: u32, format: *const u8, mut args: ...) {
+pub unsafe extern "C" fn snprintf(dst: *mut u8, n: u32, format: *const u8, args: ...) {
     log!("snprintf called n={}", n);
 
-    // almost same code as syslog ... dedup that
+    vsnprintf(dst, n, format, args);
+}
 
+unsafe fn vsnprintf(dst: *mut u8, _n: u32, format: *const u8, mut args: VaListImpl) {
     let fmt_str_ptr = format;
 
     let mut res_str = StrBuf::new();
@@ -576,6 +505,11 @@ pub unsafe extern "C" fn snprintf(dst: *mut u8, n: u32, format: *const u8, mut a
                         let v = args.arg::<i32>();
                         write!(res_str, "{}", v).ok();
                     }
+                }
+
+                'u' => {
+                    let v = args.arg::<u32>();
+                    write!(res_str, "{}", v).ok();
                 }
 
                 'p' => {
