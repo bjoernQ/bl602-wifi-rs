@@ -1,5 +1,7 @@
 use crate::log;
 
+use super::queue::SimpleQueue;
+
 #[repr(C)]
 pub struct dq_entry_s {
     flink: *mut u8,
@@ -15,7 +17,7 @@ pub struct work_s {
     delay: i64,        /* Delay until work performed */
 }
 
-static mut WORKER: [Option<extern "C" fn()>; 4] = [None; 4]; // TODO should be a queue
+static mut WORKER: SimpleQueue<extern "C" fn()> = SimpleQueue::new();
 
 #[no_mangle]
 pub unsafe extern "C" fn work_queue(
@@ -28,20 +30,7 @@ pub unsafe extern "C" fn work_queue(
     log!("work_queue qid={} arg={:p} delay={}", qid, arg, delay);
 
     riscv::interrupt::free(|_| {
-        let free_idx = WORKER
-            .iter()
-            .enumerate()
-            .find(|v| v.1.is_none())
-            .map(|v| v.0);
-
-        match free_idx {
-            Some(idx) => {
-                WORKER[idx] = Some(worker);
-            }
-            None => {
-                panic!("Already queued too many workers!");
-            }
-        }
+        WORKER.enqueue(worker);
     });
 
     0
@@ -49,12 +38,18 @@ pub unsafe extern "C" fn work_queue(
 
 pub fn do_work() {
     unsafe {
-        let mut todo: [Option<extern "C" fn()>; 4] = [None; 4];
+        let mut todo: [Option<extern "C" fn()>; 10] = [None; 10];
 
         riscv::interrupt::free(|_| {
-            for i in 0..WORKER.len() {
-                todo[i] = WORKER[i].take();
-            }
+            todo.iter_mut().for_each(|e| {
+                let work = WORKER.dequeue();
+                match work {
+                    Some(worker) => {
+                        e.replace(worker);
+                    }
+                    None => {}
+                }
+            });
         });
 
         for worker in todo.iter() {

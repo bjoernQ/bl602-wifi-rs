@@ -3,6 +3,8 @@ use embedded_time::duration::Milliseconds;
 use crate::{binary::c_types::c_void, compat::get_time, log, print};
 use core::fmt::Write;
 
+use super::queue::SimpleQueue;
+
 static mut MUTEXES: [Option<*mut u8>; 1] = [None];
 pub static mut EMULATED_TIMER: [Option<EmulatedTimer>; 2] = [None; 2];
 
@@ -414,10 +416,7 @@ struct MqMessage {
     len: usize,
 }
 
-static mut MESSAGES: [Option<MqMessage>; 10] =
-    [None, None, None, None, None, None, None, None, None, None];
-static mut MESSAGE_READ: usize = 0;
-static mut MESSAGE_WRITE: usize = 0;
+static mut MESSAGES: SimpleQueue<MqMessage> = SimpleQueue::new();
 
 #[no_mangle]
 pub unsafe extern "C" fn file_mq_send(
@@ -427,12 +426,10 @@ pub unsafe extern "C" fn file_mq_send(
     prio: u32,
 ) -> i32 {
     log!(
-        "file_mq_send called mq={:p} msglen={} prio={}|r={} w={}",
+        "file_mq_send called mq={:p} msglen={} prio={}",
         mq,
         msglen,
         prio,
-        MESSAGE_READ,
-        MESSAGE_WRITE
     );
 
     let mut data = [0u8; 256];
@@ -445,12 +442,7 @@ pub unsafe extern "C" fn file_mq_send(
         len: msglen as usize,
     };
 
-    MESSAGES[MESSAGE_WRITE] = Some(msg);
-    MESSAGE_WRITE += 1;
-
-    if MESSAGE_WRITE >= 10 {
-        MESSAGE_WRITE = 0;
-    }
+    MESSAGES.enqueue(msg);
 
     0
 }
@@ -471,27 +463,25 @@ pub unsafe extern "C" fn file_mq_timedreceive(
     abstime: *const timespec,
 ) -> i32 {
     log!(
-        "file_mq_timedreceive called {:p} {:p} {} {:p}=>{} {:?}|r={} w={}",
+        "file_mq_timedreceive called {:p} {:p} {} {:p}=>{} {:?}",
         mq,
         msg,
         msglen,
         prio,
         *prio,
         *abstime,
-        MESSAGE_READ,
-        MESSAGE_WRITE
     );
 
     let mut received_bytes: i32 = 0;
 
     let wait_end = Milliseconds::new((*abstime).tv_sec * 1000 + 1000);
-    while MESSAGE_READ == MESSAGE_WRITE {
+    while MESSAGES.is_empty() {
         if get_time() > wait_end {
             break;
         }
     }
 
-    match MESSAGES[MESSAGE_READ].take() {
+    match MESSAGES.dequeue() {
         core::option::Option::Some(message) => {
             for i in 0..message.len {
                 *(msg.offset(i as isize)) = message.data[i];
@@ -500,11 +490,6 @@ pub unsafe extern "C" fn file_mq_timedreceive(
             log!("copied message with len {}", message.len);
 
             received_bytes = message.len as i32;
-
-            MESSAGE_READ += 1;
-            if MESSAGE_READ >= 10 {
-                MESSAGE_READ = 0;
-            }
         }
         core::option::Option::None => {}
     };
