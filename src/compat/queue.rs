@@ -40,4 +40,11 @@ impl<T> SimpleQueue<T> {
     pub fn is_empty(&self) -> bool {
         self.read_index == self.write_index
     }
+
+    pub fn is_full(&self) -> bool {
+        let mut next_write = self.read_index + 1;
+        next_write %= QUEUE_SIZE;
+
+        next_write == self.read_index
+    }
 }

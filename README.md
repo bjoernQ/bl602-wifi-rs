@@ -30,8 +30,9 @@ Compile with `cargo build -Z build-std --target riscv32imfc-unknown-none-elf.jso
 
 ## Things to change
 
-- [ ] especially the code in `compat` needs rework - e.g. the clumsy queues should get replaced
-- [ ] make it more stable (e.g. don't panic on running out of RX buffer space)
+- [ ] especially the code in `compat` needs rework
+- [ ] make it more stable
+- [ ] use a queue for tx
 - [ ] make this a library crate
 
 and many more ...

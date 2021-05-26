@@ -1,7 +1,6 @@
 use embedded_time::duration::Milliseconds;
 use smoltcp::phy::{Device, DeviceCapabilities, RxToken, TxToken};
 
-use crate::binary::bl_wifi;
 use crate::binary::wifi_mgmr::{self, wifi_mgmr_drv_init, CODE_ON_GOT_IP};
 use crate::binary::wifi_mgmr_api;
 use crate::compat::bl602::{bl602_set_em_sel_bl602_glb_em_8kb, hbn_config_aon_pad_input_and_smt};
@@ -11,6 +10,7 @@ use crate::compat::{
     get_time,
     work_queue::do_work,
 };
+use crate::{binary::bl_wifi, compat::queue::SimpleQueue};
 use crate::{log, print, println};
 
 extern "C" {
@@ -43,10 +43,10 @@ struct DataFrame {
     data: *mut u8,
 }
 
-static mut DATA_QUEUE_RX: [Option<DataFrame>; 4] = [None, None, None, None];
+static mut DATA_QUEUE_RX: SimpleQueue<DataFrame> = SimpleQueue::new();
 
 #[link_section = ".wifi_ram.txbuff"]
-static mut TX_BUFFER: [u8; 1650] = [0u8; 1650];
+static mut TX_BUFFER: [u8; 1650] = [0u8; 1650]; // should be a queue
 pub static mut TX_QUEUED: bool = false;
 
 pub fn wifi_pre_init() {
@@ -143,19 +143,12 @@ pub unsafe extern "C" fn bl602_net_notify(event: u32, data: *mut u8, len: usize)
 
     riscv::interrupt::free(|_| {
         if is_rx {
-            let idx = DATA_QUEUE_RX.iter().enumerate().find(|v| v.1.is_none());
-
-            let idx = match idx {
-                Some(v) => v.0,
-                None => {
-                    panic!("No free RX slot");
-                }
-            };
-
-            DATA_QUEUE_RX[idx] = Some(DataFrame {
-                len: len,
-                data: data,
-            });
+            if !DATA_QUEUE_RX.is_full() {
+                DATA_QUEUE_RX.enqueue(DataFrame {
+                    len: len,
+                    data: data,
+                });
+            }
         } else if is_tx_done {
             // nothing here
         }
@@ -213,7 +206,7 @@ impl<'a> Device<'a> for WifiDevice {
     type TxToken = WifiTxToken;
 
     fn receive(&'a mut self) -> Option<(Self::RxToken, Self::TxToken)> {
-        let available = unsafe { DATA_QUEUE_RX.iter().find(|v| v.is_some()).is_some() };
+        let available = unsafe { !DATA_QUEUE_RX.is_empty() };
 
         if available {
             Some((WifiRxToken::default(), WifiTxToken::default()))
@@ -243,8 +236,8 @@ impl RxToken for WifiRxToken {
         F: FnOnce(&mut [u8]) -> smoltcp::Result<R>,
     {
         unsafe {
-            for i in 0..DATA_QUEUE_RX.len() {
-                let element = DATA_QUEUE_RX[i].take();
+            while !DATA_QUEUE_RX.is_empty() {
+                let element = DATA_QUEUE_RX.dequeue();
 
                 match element {
                     Some(data) => {
