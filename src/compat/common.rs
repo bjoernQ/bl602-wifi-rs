@@ -1,6 +1,6 @@
 use embedded_time::duration::Milliseconds;
 
-use crate::{binary::c_types::c_void, compat::get_time, log, print, println};
+use crate::{binary::c_types::c_void, compat::get_time, log, print};
 use core::fmt::Write;
 
 static mut MUTEXES: [Option<*mut u8>; 1] = [None];
@@ -672,88 +672,6 @@ pub unsafe extern "C" fn zalloc() {
     log!("zalloc called");
 
     unimplemented!("zalloc");
-}
-
-extern "C" {
-    static _sheap: u8;
-}
-
-#[derive(Debug, Copy, Clone)]
-struct Allocation {
-    address: *const u8,
-    size: usize,
-}
-
-static mut ALLOCATIONS: [Option<Allocation>; 128] = [None; 128];
-
-#[no_mangle]
-pub unsafe extern "C" fn malloc(size: u32) -> *const u8 {
-    log!("malloc called {}", size);
-
-    let mut candidate_addr = &_sheap as *const u8;
-
-    riscv::interrupt::free(|_critical_section| {
-        let aligned_size = size + if size % 4 != 0 { 4 - size % 4 } else { 0 };
-
-        // dumb alloc - just use the highest address
-        for &allocation in ALLOCATIONS.iter() {
-            match allocation {
-                Some(allocation) => {
-                    if candidate_addr <= allocation.address {
-                        candidate_addr = allocation.address.offset(allocation.size as isize);
-                    }
-                }
-                None => {}
-            }
-        }
-
-        let mut free_idx = 0;
-        for &allocation in ALLOCATIONS.iter() {
-            if allocation.is_none() {
-                break;
-            }
-            free_idx += 1;
-        }
-
-        ALLOCATIONS[free_idx] = Some(Allocation {
-            address: candidate_addr,
-            size: aligned_size as usize,
-        });
-
-        log!("malloc addr idx {} at {:p}", free_idx, candidate_addr);
-    });
-
-    return candidate_addr;
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn free(ptr: *const u8) {
-    log!("free called {:p}", ptr);
-
-    riscv::interrupt::free(|_critical_section| {
-        let mut alloced_idx: isize = -1;
-        let mut i = 0;
-        for &allocation in ALLOCATIONS.iter() {
-            match allocation {
-                Some(allocation) => {
-                    if allocation.address == ptr {
-                        alloced_idx = i;
-                        break;
-                    }
-                }
-                None => {}
-            }
-            i += 1;
-        }
-
-        if alloced_idx != -1 {
-            log!("free idx {}", alloced_idx);
-
-            ALLOCATIONS[alloced_idx as usize] = None;
-        } else {
-            panic!("freeing a memory area we don't know of");
-        }
-    });
 }
 
 #[no_mangle]
