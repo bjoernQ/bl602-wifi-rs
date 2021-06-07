@@ -23,8 +23,8 @@ Also it needs a very special linker script.
 
 ## Get Started
 
-In `main.rs` change the SSID and PSK for your access point. Maybe you need to change the IP address
-(currently 192.168.2.191) and the IP of the default gateway (192.168.2.1).
+In `wifi_config.rs` change the SSID and PSK for your access point. Maybe you need to change the IP address
+(currently 192.168.2.191) and the IP of the default gateway (192.168.2.1) in `main.rs`.
 
 Compile with `cargo build -Z build-std --target riscv32imfc-unknown-none-elf.json` and flash the binary.
 

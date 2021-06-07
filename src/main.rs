@@ -51,6 +51,10 @@ mod log;
 
 mod binary;
 
+mod wifi_config;
+use wifi_config::WIFI_PASSWORD;
+use wifi_config::WIFI_SSID;
+
 #[riscv_rt::entry]
 fn main() -> ! {
     let dp = pac::Peripherals::take().unwrap();
@@ -155,7 +159,7 @@ extern "C" fn user_task() {
 
         println!("start connect");
 
-        connect_sta("YOU_APS_SSID", "YOUR_PSK");
+        connect_sta(WIFI_SSID, WIFI_PASSWORD);
 
         let greet_socket = {
             static mut TCP_SERVER_RX_DATA: [u8; 32] = [0; 32];
