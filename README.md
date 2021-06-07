@@ -21,6 +21,8 @@ This needs some modifications to the following crates (done in my forks referenc
 
 Also it needs a very special linker script.
 
+Currently it uses both timers which can't be used for other things.
+
 ## Get Started
 
 In `wifi_config.rs` change the SSID and PSK for your access point. Maybe you need to change the IP address

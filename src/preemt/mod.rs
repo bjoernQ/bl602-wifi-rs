@@ -7,7 +7,7 @@ pub struct Context {
     running: bool,
 }
 
-const STACK_SIZE: usize = 9216 + 2048;
+const STACK_SIZE: usize = 8192;
 const MAX_TASK: usize = 4;
 
 pub static mut TASK_STACK: [u8; STACK_SIZE * MAX_TASK] = [0u8; STACK_SIZE * MAX_TASK];
