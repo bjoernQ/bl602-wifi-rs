@@ -111,90 +111,86 @@ fn main() -> ! {
 
     println!("done");
 
-    unsafe {
-        task_create(user_task);
-        task_create(wifi_worker_task1);
-        task_create(wifi_worker_task2);
+    task_create(wifi_worker_task1);
+    task_create(wifi_worker_task2);
 
-        get_ch0().enable(); // start timer for tasks
+    get_ch0().enable(); // start timer for tasks
+
+    unsafe {
         riscv::interrupt::enable();
     }
 
-    loop {}
-}
+    let mut socket_set_entries: [_; 2] = Default::default();
+    let mut sockets = smoltcp::socket::SocketSet::new(&mut socket_set_entries[..]);
+    let mut neighbor_cache_storage = [None; 8];
+    let neighbor_cache = NeighborCache::new(&mut neighbor_cache_storage[..]);
 
-extern "C" fn user_task() {
-    unsafe {
-        let mut socket_set_entries: [_; 2] = Default::default();
-        let mut sockets = smoltcp::socket::SocketSet::new(&mut socket_set_entries[..]);
-        let mut neighbor_cache_storage = [None; 8];
-        let neighbor_cache = NeighborCache::new(&mut neighbor_cache_storage[..]);
+    let hw_address = EthernetAddress::from_bytes(&[0, 0, 0, 0, 0, 0]);
+    let device = WifiDevice {};
 
-        let hw_address = EthernetAddress::from_bytes(&[0, 0, 0, 0, 0, 0]);
-        let device = WifiDevice {};
+    let ip_addr = IpCidr::new(IpAddress::v4(192, 168, 2, 191), 24);
+    let mut ip_addrs = [ip_addr];
 
-        let ip_addr = IpCidr::new(IpAddress::v4(192, 168, 2, 191), 24);
-        let mut ip_addrs = [ip_addr];
+    let mut routes_storage = [None; 1];
+    let mut routes = Routes::new(&mut routes_storage[..]);
+    routes
+        .add_default_ipv4_route(Ipv4Address::new(192, 168, 2, 1))
+        .ok();
 
-        let mut routes_storage = [None; 1];
-        let mut routes = Routes::new(&mut routes_storage[..]);
-        routes
-            .add_default_ipv4_route(Ipv4Address::new(192, 168, 2, 1))
-            .ok();
+    let mut ethernet = smoltcp::iface::EthernetInterfaceBuilder::new(device)
+        .ethernet_addr(hw_address)
+        .neighbor_cache(neighbor_cache)
+        .ip_addrs(&mut ip_addrs[..])
+        .routes(routes)
+        .finalize();
 
-        let mut ethernet = smoltcp::iface::EthernetInterfaceBuilder::new(device)
-            .ethernet_addr(hw_address)
-            .neighbor_cache(neighbor_cache)
-            .ip_addrs(&mut ip_addrs[..])
-            .routes(routes)
-            .finalize();
+    println!("let's go..");
 
-        println!("let's go..");
+    wifi_init();
 
-        wifi_init();
+    let mac = get_mac();
+    let addr = EthernetAddress::from_bytes(&mac);
+    ethernet.set_ethernet_addr(addr);
 
-        let mac = get_mac();
-        let addr = EthernetAddress::from_bytes(&mac);
-        ethernet.set_ethernet_addr(addr);
+    println!("start connect");
 
-        println!("start connect");
+    connect_sta(WIFI_SSID, WIFI_PASSWORD);
 
-        connect_sta(WIFI_SSID, WIFI_PASSWORD);
+    let greet_socket = {
+        static mut TCP_SERVER_RX_DATA: [u8; 32] = [0; 32];
+        static mut TCP_SERVER_TX_DATA: [u8; 32] = [0; 32];
 
-        let greet_socket = {
-            static mut TCP_SERVER_RX_DATA: [u8; 32] = [0; 32];
-            static mut TCP_SERVER_TX_DATA: [u8; 32] = [0; 32];
-            let tcp_rx_buffer = TcpSocketBuffer::new(&mut TCP_SERVER_RX_DATA[..]);
-            let tcp_tx_buffer = TcpSocketBuffer::new(&mut TCP_SERVER_TX_DATA[..]);
-            TcpSocket::new(tcp_rx_buffer, tcp_tx_buffer)
-        };
-        let greet_handle = sockets.add(greet_socket);
+        let tcp_rx_buffer = unsafe { TcpSocketBuffer::new(&mut TCP_SERVER_RX_DATA[..]) };
+        let tcp_tx_buffer = unsafe { TcpSocketBuffer::new(&mut TCP_SERVER_TX_DATA[..]) };
 
-        // task should never return
-        loop {
-            let timestamp = smoltcp::time::Instant::from_millis(get_ch1().current_time().0);
-            riscv::interrupt::free(|_| {
-                ethernet.poll(&mut sockets, timestamp).ok();
-            });
+        TcpSocket::new(tcp_rx_buffer, tcp_tx_buffer)
+    };
+    let greet_handle = sockets.add(greet_socket);
 
-            trigger_transmit_if_needed();
+    // task should never return
+    loop {
+        let timestamp = smoltcp::time::Instant::from_millis(get_ch1().current_time().0);
+        riscv::interrupt::free(|_| {
+            ethernet.poll(&mut sockets, timestamp).ok();
+        });
 
-            // Control the "greeting" socket (:4321)
-            {
-                let mut socket = sockets.get::<TcpSocket>(greet_handle);
-                if !socket.is_open() {
-                    println!(
-                        "Listening to port 4321 for greeting, \
+        trigger_transmit_if_needed();
+
+        // Control the "greeting" socket (:4321)
+        {
+            let mut socket = sockets.get::<TcpSocket>(greet_handle);
+            if !socket.is_open() {
+                println!(
+                    "Listening to port 4321 for greeting, \
                         please connect to the port"
-                    );
-                    socket.listen(4321).unwrap();
-                }
+                );
+                socket.listen(4321).unwrap();
+            }
 
-                if socket.can_send() {
-                    println!("Send and close.");
-                    socket.send_slice(&b"Hello World"[..]).ok();
-                    socket.close();
-                }
+            if socket.can_send() {
+                println!("Send and close.");
+                socket.send_slice(&b"Hello World"[..]).ok();
+                socket.close();
             }
         }
     }

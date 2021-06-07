@@ -12,6 +12,8 @@ const MAX_TASK: usize = 4;
 
 pub static mut TASK_STACK: [u8; STACK_SIZE * MAX_TASK] = [0u8; STACK_SIZE * MAX_TASK];
 
+static mut FIRST_SWITCH: bool = true;
+
 static mut TASK_TOP: usize = 0;
 
 pub static mut CTX_NOW: usize = 0;
@@ -69,6 +71,21 @@ pub fn task_create(task: extern "C" fn()) -> usize {
     }
 }
 
+fn task_create_from_mepc(mepc: usize) -> usize {
+    unsafe {
+        let i = TASK_TOP;
+        TASK_TOP += 1;
+        CTX_TASKS[i].pc = mepc;
+        CTX_TASKS[i].trap_frame.sp = &TASK_STACK as *const _ as usize
+            + (STACK_SIZE as usize * i as usize)
+            + STACK_SIZE as usize
+            - 4;
+
+        CTX_NOW = i;
+        i
+    }
+}
+
 pub fn task_to_trap_frame(id: usize, trap_frame: &mut TrapFrame) -> usize {
     unsafe {
         trap_frame.ra = CTX_TASKS[id].trap_frame.ra;
@@ -109,11 +126,6 @@ pub fn task_to_trap_frame(id: usize, trap_frame: &mut TrapFrame) -> usize {
 
 pub fn trap_frame_to_task(id: usize, pc: usize, trap_frame: &TrapFrame) {
     unsafe {
-        if !CTX_TASKS[id].running {
-            CTX_TASKS[id].running = true;
-            return;
-        }
-
         CTX_TASKS[id].trap_frame.ra = trap_frame.ra;
         CTX_TASKS[id].trap_frame.sp = trap_frame.sp;
         CTX_TASKS[id].trap_frame.a0 = trap_frame.a0;
@@ -159,6 +171,12 @@ pub fn next_task() {
 pub fn task_switch(trap_frame: &mut TrapFrame) {
     unsafe {
         let old_mepc = riscv::register::mepc::read();
+
+        if FIRST_SWITCH {
+            FIRST_SWITCH = false;
+            let main_task = task_create_from_mepc(old_mepc);
+            CTX_NOW = main_task;
+        }
 
         trap_frame_to_task(CTX_NOW, old_mepc, trap_frame);
 
