@@ -69,7 +69,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "bl602test"
+name = "bl602wifi"
 version = "0.1.0"
 dependencies = [
  "bl602-hal",

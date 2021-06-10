@@ -1,5 +1,5 @@
 [package]
-name = "bl602test"
+name = "bl602wifi"
 version = "0.1.0"
 authors = ["bjoern <bjoern.quentin@mobile-j.de>"]
 edition = "2018"

@@ -1,1 +1,1 @@
- cargo build  -Z build-std --target riscv32imfc-unknown-none-elf.json && flash.bat
+cargo build  -Z build-std --target riscv32imfc-unknown-none-elf.json --example simple && flash.bat

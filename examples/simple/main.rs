@@ -38,18 +38,12 @@ static mut GLOBAL_SERIAL: MaybeUninit<
 static mut CH0: MaybeUninit<ConfiguredTimerChannel0> = MaybeUninit::uninit();
 static mut CH1: MaybeUninit<ConfiguredTimerChannel1> = MaybeUninit::uninit();
 
-mod preemt;
-use preemt::*;
-
-mod compat;
-use compat::bl602::dispatch_irq;
-
-mod wifi;
-use wifi::*;
-
-mod log;
-
-mod binary;
+use bl602wifi::compat::bl602::dispatch_irq;
+use bl602wifi::compat::set_time_source;
+use bl602wifi::log::set_writer;
+use bl602wifi::preemt::*;
+use bl602wifi::println;
+use bl602wifi::wifi::*;
 
 mod wifi_config;
 use wifi_config::WIFI_PASSWORD;
@@ -81,6 +75,7 @@ fn main() -> ! {
         *(GLOBAL_SERIAL.as_mut_ptr()) = serial;
     }
 
+    set_writer(get_serial);
     println!("start");
 
     wifi_pre_init();
@@ -107,7 +102,7 @@ fn main() -> ! {
         *(CH1.as_mut_ptr()) = ch1;
     }
     get_ch1().enable(); // start timer
-    compat::set_time_source(get_time);
+    set_time_source(get_time);
 
     println!("done");
 
