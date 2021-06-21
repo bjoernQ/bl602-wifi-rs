@@ -13,6 +13,8 @@ use crate::wifi::{wifi_worker_task1, wifi_worker_task2};
 
 static mut CH0: MaybeUninit<ConfiguredTimerChannel0> = MaybeUninit::uninit();
 
+static mut TIME_MS: u32 = 0;
+
 pub fn wifi_timer_init(channel0: TimerChannel0) {
     let ch0 = channel0.set_clock_source(ClockSource::Clock1Khz, 1_000u32.Hz());
     ch0.enable_match0_interrupt();
@@ -55,8 +57,6 @@ fn TimerCh0(trap_frame: &mut TrapFrame) {
 fn get_ch0() -> &'static mut ConfiguredTimerChannel0 {
     unsafe { &mut *CH0.as_mut_ptr() }
 }
-
-static mut TIME_MS: u32 = 0;
 
 fn get_time() -> Milliseconds {
     unsafe { riscv::interrupt::free(|_| get_ch0().current_time() + Milliseconds(TIME_MS as u32)) }

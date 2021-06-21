@@ -127,3 +127,10 @@ pub fn dispatch_irq(irq: usize) {
         }
     }
 }
+
+#[allow(non_snake_case)]
+#[no_mangle]
+fn DefaultHandler() {
+    let irq = riscv::register::mcause::read().code() & 0xff;
+    dispatch_irq(irq);
+}

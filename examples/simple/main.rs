@@ -35,11 +35,8 @@ static mut GLOBAL_SERIAL: MaybeUninit<
 
 use bl602wifi::log::set_writer;
 use bl602wifi::println;
+use bl602wifi::timer::{timestamp, wifi_timer_init};
 use bl602wifi::wifi::*;
-use bl602wifi::{
-    compat::bl602::dispatch_irq,
-    timer::{timestamp, wifi_timer_init},
-};
 
 mod wifi_config;
 use wifi_config::WIFI_PASSWORD;
@@ -177,13 +174,6 @@ fn custom_exception_handler(_trap_frame: &riscv_rt::TrapFrame) -> ! {
     let code = riscv::register::mcause::read().code() & 0xff;
     println!("exception code {} at {:x}", code, mepc);
     loop {}
-}
-
-#[allow(non_snake_case)]
-#[no_mangle]
-fn DefaultHandler() {
-    let irq = riscv::register::mcause::read().code() & 0xff;
-    dispatch_irq(irq);
 }
 
 fn get_serial() -> &'static mut dyn core::fmt::Write {
