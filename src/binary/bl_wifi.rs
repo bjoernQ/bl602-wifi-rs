@@ -77,7 +77,7 @@ pub struct _bl_wifi_env {
 }
 pub type bl_wifi_env_t = _bl_wifi_env;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct net_device {
     pub bl_hw: *mut bl_hw,
 }
@@ -130,7 +130,7 @@ extern "C" {
     pub fn bl_wifi_sta_info_get(sta_info: *mut bl_wifi_ap_info_t) -> crate::binary::c_types::c_int;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bl_hw {
     pub _address: u8,
 }

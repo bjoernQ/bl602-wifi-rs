@@ -1,7 +1,7 @@
 use core::mem::MaybeUninit;
 
 use bl602_hal as hal;
-use bl602_hal::timer::{ClockSource, Timers};
+use bl602_hal::timer::ClockSource;
 use embedded_time::duration::Milliseconds;
 use hal::interrupts::TrapFrame;
 use hal::prelude::Extensions;

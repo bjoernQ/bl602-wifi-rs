@@ -208,7 +208,7 @@ extern "C" {
     pub fn os_get_time_ms() -> u32;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct os_event {
     pub type_: crate::binary::c_types::c_int,
     pub value: *mut crate::binary::c_types::c_void,
@@ -230,7 +230,7 @@ extern "C" {
     pub fn msleep(msec: crate::binary::c_types::c_long) -> crate::binary::c_types::c_int;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct wifi_mgmr_ap_item {
     pub ssid: [crate::binary::c_types::c_char; 32usize],
     pub ssid_tail: [crate::binary::c_types::c_char; 1usize],
@@ -255,7 +255,7 @@ pub struct wifi_mgmr_sta_connect_ind_stat_info {
 }
 pub type wifi_mgmr_sta_connect_ind_stat_info_t = wifi_mgmr_sta_connect_ind_stat_info;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct wifi_sta_basic_info {
     pub sta_idx: u8,
     pub is_used: u8,
@@ -315,7 +315,7 @@ pub const WIFI_SCAN_DONE_EVENT_TYPE_WIFI_SCAN_DONE_EVENT_OK: WIFI_SCAN_DONE_EVEN
 pub const WIFI_SCAN_DONE_EVENT_TYPE_WIFI_SCAN_DONE_EVENT_BUSY: WIFI_SCAN_DONE_EVENT_TYPE = 1;
 pub type WIFI_SCAN_DONE_EVENT_TYPE = crate::binary::c_types::c_int;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct wifi_conf {
     pub country_code: [crate::binary::c_types::c_char; 3usize],
     pub channel_nums: crate::binary::c_types::c_int,
@@ -585,7 +585,7 @@ pub type max_align_t = f64;
 #[doc = " \\sa state"]
 #[doc = " \\sa transition"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct event {
     #[doc = " \\brief Type of event. Defined by user."]
     pub type_: crate::binary::c_types::c_int,
@@ -650,7 +650,7 @@ pub struct event {
 #[doc = " \\sa event"]
 #[doc = " \\sa state"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct transition {
     #[doc = " \\brief The event that will trigger this transition."]
     pub eventType: crate::binary::c_types::c_int,
@@ -783,7 +783,7 @@ pub struct transition {
 #[doc = " \\sa event"]
 #[doc = " \\sa transition"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct state {
     #[doc = " \\brief If the state has a parent state, this pointer must be non-NULL."]
     pub parentState: *const state,
@@ -827,7 +827,7 @@ pub struct state {
 #[doc = ""]
 #[doc = " There is no need to manipulate the members directly."]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct stateMachine {
     #[doc = " \\brief Pointer to the current state"]
     pub currentState: *const state,
@@ -1005,7 +1005,6 @@ pub const WIFI_MGMR_CONNECTION_STATUS_WIFI_MGMR_CONNECTION_STATUS_DISCONNECTED:
 pub type WIFI_MGMR_CONNECTION_STATUS = crate::binary::c_types::c_int;
 pub use self::WIFI_MGMR_CONNECTION_STATUS as WIFI_MGMR_CONNECTION_STATUS_T;
 #[repr(C, packed)]
-#[derive(Debug)]
 pub struct wifi_mgmr_msg {
     pub ev: WIFI_MGMR_EVENT_T,
     pub data1: *mut crate::binary::c_types::c_void,
@@ -1015,7 +1014,6 @@ pub struct wifi_mgmr_msg {
 }
 pub type wifi_mgmr_msg_t = wifi_mgmr_msg;
 #[repr(C, packed)]
-#[derive(Debug)]
 pub struct wifi_mgmr_cfg_element_msg {
     pub ops: u32,
     pub task: u32,
@@ -1043,7 +1041,7 @@ pub struct wifi_mgmr_profile_msg {
 }
 pub type wifi_mgmr_profile_msg_t = wifi_mgmr_profile_msg;
 #[repr(C, packed)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct wifi_mgmr_ipgot_msg {
     pub ip: u32,
     pub mask: u32,
@@ -1083,7 +1081,7 @@ pub struct wifi_mgmr_profile {
 }
 pub type wifi_mgmr_profile_t = wifi_mgmr_profile;
 #[repr(C, packed)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct wifi_mgmr_cipher_t {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
@@ -1177,7 +1175,7 @@ impl wifi_mgmr_cipher_t {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct wifi_mgmr_scan_item {
     pub timestamp_lastseen: u32,
     pub ssid_len: u16,
@@ -1208,7 +1206,7 @@ pub union wlan_netif__bindgen_ty_1 {
     pub sta: wlan_netif__bindgen_ty_1__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct wlan_netif__bindgen_ty_1__bindgen_ty_1 {
     pub rssi: i8,
 }
@@ -1225,7 +1223,7 @@ pub struct wifi_mgmr_connect_ind_stat_info {
 }
 pub type wifi_mgmr_connect_ind_stat_info_t = wifi_mgmr_connect_ind_stat_info;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct wifi_mgmr_sta_basic_info {
     pub sta_idx: u8,
     pub is_used: u8,
@@ -1310,7 +1308,7 @@ extern "C" {
     pub fn wifi_mgmr_api_fw_tsen_reload() -> crate::binary::c_types::c_int;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct file {
     pub _address: u8,
 }
