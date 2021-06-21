@@ -21,10 +21,7 @@ use smoltcp::{
     wire::{EthernetAddress, IpAddress, IpCidr, Ipv4Address},
 };
 
-use bl602_hal::interrupts::*;
 use bl602_hal::timer::TimerExt;
-use bl602_hal::timer::*;
-use embedded_time::duration::Milliseconds;
 
 static mut GLOBAL_SERIAL: MaybeUninit<
     bl602_hal::serial::Serial<
@@ -35,15 +32,14 @@ static mut GLOBAL_SERIAL: MaybeUninit<
         ),
     >,
 > = MaybeUninit::uninit();
-static mut CH0: MaybeUninit<ConfiguredTimerChannel0> = MaybeUninit::uninit();
-static mut CH1: MaybeUninit<ConfiguredTimerChannel1> = MaybeUninit::uninit();
 
-use bl602wifi::compat::bl602::dispatch_irq;
-use bl602wifi::compat::set_time_source;
 use bl602wifi::log::set_writer;
-use bl602wifi::preemt::*;
 use bl602wifi::println;
 use bl602wifi::wifi::*;
+use bl602wifi::{
+    compat::bl602::dispatch_irq,
+    timer::{timestamp, wifi_timer_init},
+};
 
 mod wifi_config;
 use wifi_config::WIFI_PASSWORD;
@@ -76,44 +72,13 @@ fn main() -> ! {
     }
 
     set_writer(get_serial);
-    println!("start");
+
+    println!("init");
 
     wifi_pre_init();
 
     let timers = dp.TIMER.split();
-    let ch0 = timers
-        .channel0
-        .set_clock_source(ClockSource::Clock1Khz, 1_000u32.Hz());
-    ch0.enable_match0_interrupt();
-    ch0.set_preload_value(Milliseconds::new(0));
-    ch0.set_preload(hal::timer::Preload::PreloadMatchComparator0);
-    ch0.set_match0(Milliseconds::new(10u32));
-
-    hal::interrupts::enable_interrupt(hal::interrupts::Interrupt::TimerCh0);
-    unsafe {
-        *(CH0.as_mut_ptr()) = ch0;
-    }
-
-    let ch1 = timers
-        .channel1
-        .set_clock_source(ClockSource::Clock1Khz, 1_000u32.Hz());
-    ch1.free_running_mode();
-    unsafe {
-        *(CH1.as_mut_ptr()) = ch1;
-    }
-    get_ch1().enable(); // start timer
-    set_time_source(get_time);
-
-    println!("done");
-
-    task_create(wifi_worker_task1);
-    task_create(wifi_worker_task2);
-
-    get_ch0().enable(); // start timer for tasks
-
-    unsafe {
-        riscv::interrupt::enable();
-    }
+    wifi_timer_init(timers.channel0);
 
     let mut socket_set_entries: [_; 2] = Default::default();
     let mut sockets = smoltcp::socket::SocketSet::new(&mut socket_set_entries[..]);
@@ -121,7 +86,7 @@ fn main() -> ! {
     let neighbor_cache = NeighborCache::new(&mut neighbor_cache_storage[..]);
 
     let hw_address = EthernetAddress::from_bytes(&[0, 0, 0, 0, 0, 0]);
-    let device = WifiDevice {};
+    let device = WifiDevice::new();
 
     let ip_addr = IpCidr::new(IpAddress::v4(192, 168, 2, 191), 24);
     let mut ip_addrs = [ip_addr];
@@ -139,13 +104,9 @@ fn main() -> ! {
         .routes(routes)
         .finalize();
 
-    println!("let's go..");
-
     wifi_init();
 
-    let mac = get_mac();
-    let addr = EthernetAddress::from_bytes(&mac);
-    ethernet.set_ethernet_addr(addr);
+    init_mac(&mut ethernet);
 
     println!("start connect");
 
@@ -164,7 +125,7 @@ fn main() -> ! {
 
     // task should never return
     loop {
-        let timestamp = smoltcp::time::Instant::from_millis(get_ch1().current_time().0);
+        let timestamp = timestamp();
         riscv::interrupt::free(|_| {
             ethernet.poll(&mut sockets, timestamp).ok();
         });
@@ -189,25 +150,6 @@ fn main() -> ! {
             }
         }
     }
-}
-
-#[allow(non_snake_case)]
-#[no_mangle]
-fn TimerCh0(trap_frame: &mut TrapFrame) {
-    get_ch0().clear_match0_interrupt();
-    task_switch(trap_frame);
-}
-
-fn get_ch0() -> &'static mut ConfiguredTimerChannel0 {
-    unsafe { &mut *CH0.as_mut_ptr() }
-}
-
-fn get_ch1() -> &'static mut ConfiguredTimerChannel1 {
-    unsafe { &mut *CH1.as_mut_ptr() }
-}
-
-fn get_time() -> Milliseconds {
-    get_ch1().current_time()
 }
 
 #[export_name = "ExceptionHandler"]

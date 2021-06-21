@@ -1,5 +1,6 @@
 use embedded_time::duration::Milliseconds;
 use smoltcp::phy::{Device, DeviceCapabilities, RxToken, TxToken};
+use smoltcp::wire::EthernetAddress;
 
 use crate::binary::wifi_mgmr::{self, wifi_mgmr_drv_init, CODE_ON_GOT_IP};
 use crate::binary::wifi_mgmr_api;
@@ -197,7 +198,19 @@ pub unsafe extern "C" fn _scan_cb(
     }
 }
 
+pub fn init_mac(ethernet: &mut smoltcp::iface::EthernetInterface<WifiDevice>) {
+    let mac = get_mac();
+    let addr = EthernetAddress::from_bytes(&mac);
+    ethernet.set_ethernet_addr(addr);
+}
+
 pub struct WifiDevice {}
+
+impl WifiDevice {
+    pub fn new() -> WifiDevice {
+        WifiDevice {}
+    }
+}
 
 // see https://docs.rs/smoltcp/0.7.1/smoltcp/phy/index.html
 impl<'a> Device<'a> for WifiDevice {
