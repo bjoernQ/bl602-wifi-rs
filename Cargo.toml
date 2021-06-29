@@ -6,7 +6,7 @@ edition = "2018"
 
 [dependencies]
 riscv-rt = "0.8.0"
-bl602-hal = { git = " https://github.com/bjoernQ/bl602-hal", branch = "various_improvements" }
+bl602-hal = { git = " https://github.com/sipeed/bl602-hal", rev = "6e823cc0f8dfb997fa4cf8022bcbb1b5a12a65ea" }
 #panic-halt = "0.2.0"
 riscv =  "0.6.0"
 embedded-time = "0.10.1"

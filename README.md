@@ -17,7 +17,6 @@ Sometimes it fails to connect (there is no retry currently) and it might panic.
 This needs some modifications to the following crates (done in my forks referenced in `Cargo.toml`)
 - _riscv_ - needs support for ILP32F
 - _riscv-rt_ - needs support for ILP32F and initialization of the FPU
-- _bl602-hal_ - needs some changes to the ISR handling and a way to initialize without touching the clocks
 
 Also it needs a very special linker script.
 

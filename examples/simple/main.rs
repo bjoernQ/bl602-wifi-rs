@@ -9,7 +9,7 @@ use core::{fmt::Write, mem::MaybeUninit};
 use bl602_hal as hal;
 use core::panic::PanicInfo;
 use hal::{
-    clock::Strict,
+    clock::{Strict, SysclkFreq, UART_PLL_FREQ},
     gpio::{Pin16, Pin7, Uart, Uart0Rx, Uart0Tx, UartMux0, UartMux7},
     pac::{self, UART},
     prelude::*,
@@ -45,10 +45,13 @@ use wifi_config::WIFI_SSID;
 #[riscv_rt::entry]
 fn main() -> ! {
     let dp = pac::Peripherals::take().unwrap();
-    let parts = dp.GLB.split();
+    let mut parts = dp.GLB.split();
 
-    // the wifi stuff doesn't work when touching the clock
-    let clocks = Strict::boot_defaults();
+    let clocks = Strict::new()
+        .use_pll(40_000_000u32.Hz())
+        .sys_clk(SysclkFreq::Pll160Mhz)
+        .uart_clk(UART_PLL_FREQ.Hz())
+        .freeze(&mut parts.clk_cfg);
 
     // Set up uart output. Since this microcontroller has a pin matrix,
     // we need to set up both the pins and the muxs
