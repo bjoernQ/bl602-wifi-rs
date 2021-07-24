@@ -78,7 +78,7 @@ fn main() -> ! {
     wifi_pre_init();
 
     let timers = dp.TIMER.split();
-    wifi_timer_init(timers.channel0);
+    wifi_timer_init(timers.channel0, dp.HBN);
 
     let mut socket_set_entries: [_; 2] = Default::default();
     let mut sockets = smoltcp::socket::SocketSet::new(&mut socket_set_entries[..]);

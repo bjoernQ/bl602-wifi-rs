@@ -35,5 +35,6 @@ Compile with `cargo build -Z build-std --target riscv32imfc-unknown-none-elf.jso
 - [ ] especially the code in `compat` needs rework
 - [ ] make it more stable
 - [ ] use a queue for tx
+- [ ] update to latest blobs (for me they can not connect to all APs currently)
 
 and many more ...

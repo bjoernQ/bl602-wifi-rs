@@ -47,7 +47,7 @@ checksum = "cf1de2fe8c75bc145a2f577add951f8134889b4795d47466a54a5c846d691693"
 [[package]]
 name = "bl602-hal"
 version = "0.1.0"
-source = "git+https://github.com/sipeed/bl602-hal?rev=6e823cc0f8dfb997fa4cf8022bcbb1b5a12a65ea#6e823cc0f8dfb997fa4cf8022bcbb1b5a12a65ea"
+source = "git+https://github.com/sipeed/bl602-hal?rev=a6cb8962b589d08f334821b12bb6c4c75d3f0e08#a6cb8962b589d08f334821b12bb6c4c75d3f0e08"
 dependencies = [
  "bl602-pac",
  "embedded-hal 0.2.5",
@@ -62,7 +62,7 @@ dependencies = [
 [[package]]
 name = "bl602-pac"
 version = "0.1.0"
-source = "git+https://github.com/sipeed/bl602-pac?branch=main#c8004e4d14ffa5f0f48e247d1a5e4c40eb23f266"
+source = "git+https://github.com/sipeed/bl602-pac?branch=main#4c8e69856b39a505714bc4e636705a7be858b50b"
 dependencies = [
  "bare-metal 1.0.0",
  "riscv",
@@ -108,9 +108,9 @@ dependencies = [
 
 [[package]]
 name = "embedded-time"
-version = "0.10.1"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f85ab0d224a6c70f11426a9f04d5f26d250605b80df8fbed197e49d4454f58d7"
+checksum = "86fbafcea0dea120d8ed8af67ddbf82afc031f1d3b064920645db8d061781e2c"
 dependencies = [
  "num",
 ]
@@ -225,9 +225,9 @@ checksum = "ac74c624d6b2d21f425f752262f42188365d7b8ff1aff74c82e45136510a4857"
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.26"
+version = "1.0.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a152013215dca273577e18d2bf00fa862b89b24169fb78c4c95aeb07992c9cec"
+checksum = "5c7ed8b8c7b886ea3ed7dde405212185f423ab44682667c8c6dd14aa1d9f6612"
 dependencies = [
  "unicode-xid",
 ]
@@ -378,9 +378,9 @@ checksum = "388a1df253eca08550bef6c72392cfe7c30914bf41df5269b68cbd6ff8f570a3"
 
 [[package]]
 name = "smoltcp"
-version = "0.7.3"
+version = "0.7.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "11b5647cc4676e9358e6b15b6536b34e5b413e5ae946a06b3f85e713132bcdfa"
+checksum = "3e4a069bef843d170df47e7c0a8bf8d037f217d9f5b325865acc3e466ffe40d3"
 dependencies = [
  "bitflags",
  "byteorder",
@@ -389,9 +389,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "1.0.72"
+version = "1.0.74"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a1e8cdbefb79a9a5a65e0db8b47b723ee907b7c7f8496c76a1770b5c310bab82"
+checksum = "1873d832550d4588c3dbc20f01361ab00bfe741048f71e3fecf145a7cc18b29c"
 dependencies = [
  "proc-macro2",
  "quote",

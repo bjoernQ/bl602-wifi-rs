@@ -8,7 +8,7 @@ rustflags = [
   "-C", "link-arg=./libs/",
   "-C", "link-arg=-lbl602_wifi",
 ]
-runner = "cargo blflash --port=/dev/ttyUSB0"
+runner = "blash --"
 
 [build]
 target = "riscv32imfc-unknown-none-elf"
