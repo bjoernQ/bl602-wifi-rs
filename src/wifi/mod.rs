@@ -6,11 +6,7 @@ use crate::binary::wifi_mgmr::{self, wifi_mgmr_drv_init, CODE_ON_GOT_IP};
 use crate::binary::wifi_mgmr_api;
 use crate::compat::bl602::{bl602_set_em_sel_bl602_glb_em_8kb, hbn_config_aon_pad_input_and_smt};
 use crate::compat::common::EMULATED_TIMER;
-use crate::compat::{
-    common::{EmulatedTimer, StrBuf},
-    get_time,
-    work_queue::do_work,
-};
+use crate::compat::{common::EmulatedTimer, get_time, work_queue::do_work};
 use crate::{binary::bl_wifi, compat::queue::SimpleQueue};
 use crate::{log, print, println};
 
@@ -49,6 +45,9 @@ static mut DATA_QUEUE_RX: SimpleQueue<DataFrame> = SimpleQueue::new();
 #[link_section = ".wifi_ram.txbuff"]
 static mut TX_BUFFER: [u8; 1650] = [0u8; 1650]; // should be a queue
 pub static mut TX_QUEUED: bool = false;
+
+static mut SCAN_IN_PROGRESS: bool = false;
+static mut LAST_SCAN_RESULT: [Option<ScanItem>; 50] = [None; 50];
 
 pub fn wifi_pre_init() {
     unsafe {
@@ -103,6 +102,20 @@ pub fn get_mac() -> [u8; 6] {
         bl602_ef_ctrl_read_mac_address(&mut mac);
     }
     mac
+}
+
+pub fn wifi_scan() -> core::result::Result<[Option<ScanItem>; 50], ()> {
+    unsafe {
+        if SCAN_IN_PROGRESS {
+            return Err(());
+        }
+
+        SCAN_IN_PROGRESS = true;
+        wifi_mgmr::wifi_mgmr_scan(core::ptr::null_mut(), Some(scan_cb));
+        while SCAN_IN_PROGRESS {}
+
+        Ok(LAST_SCAN_RESULT.clone())
+    }
 }
 
 pub fn connect_sta(arg_ssid: &str, arg_psk: &str) {
@@ -171,7 +184,7 @@ pub unsafe extern "C" fn bl602_net_event(evt: u32, val: u32) {
     }
 }
 
-pub unsafe extern "C" fn _scan_cb(
+pub unsafe extern "C" fn scan_cb(
     _data: *mut crate::binary::c_types::c_void,
     _param: *mut crate::binary::c_types::c_void,
 ) {
@@ -179,20 +192,19 @@ pub unsafe extern "C" fn _scan_cb(
 
     for i in 0..50 {
         let item = wifiMgmr.scan_items[i];
-
-        let mut ssid_len = item.ssid_len as usize;
-        if ssid_len >= 32 {
-            ssid_len = 31;
+        if item.is_used != 0 {
+            LAST_SCAN_RESULT[i] = Some(ScanItem {
+                ssid: item.ssid.clone(),
+                channel: item.channel,
+                rssi: item.rssi,
+                bssid: item.bssid.clone(),
+            });
+        } else {
+            LAST_SCAN_RESULT[i] = None;
         }
-        let ssid = item.ssid;
-        let mut ssid_array = [0u8; 32];
-        for x in 0usize..ssid_len {
-            ssid_array[x] = ssid[x];
-        }
-        let str_buf = StrBuf::from(&ssid_array as *const u8);
-
-        println!("{}={}", i, str_buf.as_str_ref());
     }
+
+    SCAN_IN_PROGRESS = false;
 }
 
 pub fn init_mac(ethernet: &mut smoltcp::iface::EthernetInterface<WifiDevice>) {
@@ -417,4 +429,12 @@ pub extern "C" fn wifi_worker_task2() {
     loop {
         do_work();
     }
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct ScanItem {
+    pub ssid: [u8; 32],
+    pub channel: u8,
+    pub rssi: i8,
+    pub bssid: [u8; 6],
 }

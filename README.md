@@ -28,13 +28,13 @@ In `examples/simple/wifi_config.rs` change the SSID and PSK for your access poin
 
 Maybe you need to change the IP address (currently 192.168.2.191) and the IP of the default gateway (192.168.2.1) in `examples/simple/main.rs`.
 
-Compile with `cargo build -Z build-std --target riscv32imfc-unknown-none-elf.json --example simple` and flash the resulting binary.
+Compile with `cargo build -Z build-std --target riscv32imfc-unknown-none-elf.json --example simple` and flash the resulting binary. (or use one of the other samples)
 
 ## Things to change
 
 - [ ] especially the code in `compat` needs rework
 - [ ] make it more stable
 - [ ] use a queue for tx
-- [ ] update to latest blobs (for me they can not connect to all APs currently)
+- [ ] update to latest blobs (for me they can not connect to all APs currently while the used one can)
 
 and many more ...
