@@ -120,19 +120,27 @@ pub unsafe extern "C" fn sem_init(sem: *mut sem, pshared: i32, value: u32) -> i3
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn sem_post(sem: *mut sem) {
+pub unsafe extern "C" fn sem_post(sem: *mut sem) -> i32 {
     log!("sem_post called");
 
-    (*sem).semcount += 1;
+    riscv::interrupt::free(|_| {
+        (*sem).semcount += 1;
+    });
+
+    0
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn sem_wait(sem: *mut sem) {
+pub unsafe extern "C" fn sem_wait(sem: *mut sem) -> i32 {
     log!("sem_wait called");
 
-    while (*sem).semcount == 0 {}
+    while riscv::interrupt::free(|_| (*sem).semcount) <= 0 {}
 
-    (*sem).semcount -= 1;
+    riscv::interrupt::free(|_| {
+        (*sem).semcount -= 1;
+    });
+
+    0
 }
 
 #[no_mangle]

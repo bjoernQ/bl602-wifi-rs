@@ -68,7 +68,12 @@ pub fn wifi_pre_init() {
 }
 
 pub fn wifi_init() {
-    let mut mac = [0u8; 6];
+    let mut mac = get_mac();
+    println!("MAC address");
+    for x in mac.iter() {
+        print!("{:2x} ", *x);
+    }
+    print!("\r\n");
 
     let mut conf = crate::binary::wifi_mgmr::wifi_conf_t {
         country_code: [b'E', b'U', 0],
@@ -76,27 +81,19 @@ pub fn wifi_init() {
     };
 
     unsafe {
-        wifi_main_init();
-        ipc_emb_notify();
-        wifi_mgmr_drv_init(&mut conf);
-        for _ in 0..65000 {}
-        wifi_mgmr_tsk_init();
-
-        bl602_ef_ctrl_read_mac_address(&mut mac);
-
-        println!("MAC address");
-        for x in mac.iter() {
-            print!("{:2x} ", *x);
-        }
-        print!("\r\n");
-
         crate::binary::bl_wifi::bl_wifi_ap_mac_addr_set(&mut mac as *mut _);
         crate::binary::bl_wifi::bl_wifi_sta_mac_addr_set(&mut mac as *mut _);
 
         let mut my_ssid = [b't', b'e', b's', b't', 0];
         crate::binary::wifi_mgmr_api::wifi_mgmr_sta_ssid_set(&mut my_ssid as *mut _);
-        crate::binary::wifi_mgmr_api::wifi_mgmr_sta_autoconnect_disable();
         crate::binary::wifi_mgmr_api::wifi_mgmr_sta_mac_set(&mut mac as *mut _);
+
+        wifi_main_init();
+        ipc_emb_notify();
+        wifi_mgmr_drv_init(&mut conf);
+        wifi_mgmr_tsk_init();
+
+        crate::binary::wifi_mgmr_api::wifi_mgmr_sta_autoconnect_disable();
     }
 }
 
