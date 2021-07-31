@@ -186,6 +186,6 @@ fn get_serial() -> &'static mut dyn core::fmt::Write {
 #[panic_handler]
 fn panic_handler(info: &PanicInfo) -> ! {
     let serial = unsafe { &mut *(GLOBAL_SERIAL.as_mut_ptr()) };
-    write!(serial, "PANIC! {:?}", info).ok();
+    write!(serial, "PANIC! {:?}\r\n", info).ok();
     loop {}
 }

@@ -25,7 +25,7 @@ pub fn wifi_timer_init(channel0: TimerChannel0, hbn: HBN) {
     ch0.enable_match0_interrupt();
     ch0.set_preload_value(Milliseconds::new(0));
     ch0.set_preload(hal::timer::Preload::PreloadMatchComparator0);
-    ch0.set_match0(Milliseconds::new(10u32));
+    ch0.set_match0(Milliseconds::new(1u32));
 
     hal::interrupts::enable_interrupt(hal::interrupts::Interrupt::TimerCh0);
     unsafe {

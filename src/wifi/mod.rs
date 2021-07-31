@@ -90,6 +90,9 @@ pub fn wifi_init() {
         wifi_main_init();
         ipc_emb_notify();
         wifi_mgmr_drv_init(&mut conf);
+
+        for _ in 0..250000 {}
+
         wifi_mgmr_tsk_init();
 
         crate::binary::wifi_mgmr_api::wifi_mgmr_sta_autoconnect_disable();
