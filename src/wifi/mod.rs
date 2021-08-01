@@ -308,7 +308,8 @@ impl TxToken for WifiTxToken {
                 let is_sta = 1; // for now we are always STA
                 unsafe {
                     if TX_QUEUED {
-                        panic!("already some tx pending");
+                        // for the future we should have more TX buffers
+                        return Err(smoltcp::Error::Exhausted);
                     }
 
                     bl_output(

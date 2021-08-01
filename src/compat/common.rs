@@ -147,8 +147,13 @@ pub unsafe extern "C" fn sem_wait(sem: *mut sem) -> i32 {
 pub unsafe extern "C" fn sem_timedwait(sem: *mut sem, abstime: *mut timespec) -> i32 {
     log!("sem_timedwait called {:p} {:?}", sem, *abstime);
 
+    const ETIMEDOUT: i32 = 3447;
+
+    let ends_at = (*abstime).tv_sec * 1000;
     while (*sem).semcount == 0 {
-        // should be waiting'n breaking
+        if get_time().0 >= ends_at {
+            return ETIMEDOUT;
+        }
     }
 
     (*sem).semcount -= 1;
@@ -322,7 +327,7 @@ pub unsafe extern "C" fn timer_settime(
         core::option::Option::Some(old) => Some(EmulatedTimer {
             notify_function: old.notify_function,
             interval_secs: (*new_value).it_interval.tv_sec,
-            next_notify: (get_time() + Milliseconds::new((*new_value).it_interval.tv_sec * 1000)).0,
+            next_notify: (*new_value).it_value.tv_sec * 1000,
         }),
         core::option::Option::None => None,
     };
