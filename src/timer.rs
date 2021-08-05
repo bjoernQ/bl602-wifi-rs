@@ -9,6 +9,7 @@ use hal::prelude::Extensions;
 use hal::rtc;
 use hal::timer::{ConfiguredTimerChannel0, TimerChannel0};
 
+use crate::ble::ble_worker;
 use crate::compat::set_time_source;
 use crate::preemt::{task_create, task_switch};
 use crate::wifi::{wifi_worker_task1, wifi_worker_task2};
@@ -36,6 +37,7 @@ pub fn wifi_timer_init(channel0: TimerChannel0, hbn: HBN) {
 
     task_create(wifi_worker_task1);
     task_create(wifi_worker_task2);
+    task_create(ble_worker); // TODO: feature gate?
 
     get_ch0().enable(); // start timer for tasks
 
