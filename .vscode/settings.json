@@ -1,0 +1,15 @@
+{
+    "rust-analyzer.cargo.allTargets": false,
+    "rust-analyzer.checkOnSave.allTargets": true,
+    "rust-analyzer.checkOnSave.overrideCommand": [
+        "cargo",
+        "check",
+        "-Z", 
+        "build-std",
+        "--target",
+        "riscv32imfc-unknown-none-elf.json",
+        "--message-format", 
+        "json",
+        "--examples"
+    ]
+}
