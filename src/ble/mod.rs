@@ -1,6 +1,6 @@
 use core::mem::MaybeUninit;
 
-use crate::{compat::common::StrBuf, log};
+use crate::{compat::common::StrBuf, log, println};
 
 pub mod controller;
 
@@ -69,7 +69,10 @@ pub unsafe extern "C" fn rename(oldpath: *const u8, newpath: *const u8) -> i32 {
 
 #[no_mangle]
 pub unsafe extern "C" fn file_write(_filep: &File, buf: *mut u8, nbytes: i32) -> i16 {
-    log!("file_write {:p} {}", buf, nbytes);
+    println!("file_write {:p} {}", buf, nbytes);
+
+    let data = core::slice::from_raw_parts_mut(buf, nbytes as usize);
+    println!("{:x?}", data);
 
     for i in 0..nbytes {
         log!("{:x}", (*(buf.offset(i as isize))));
@@ -102,7 +105,9 @@ pub unsafe extern "C" fn file_read(_filep: &File, buf: *mut u8, nbytes: i32) -> 
     }
 
     if read > 0 {
-        log!("file_read read {} bytes", read);
+        println!("file_read read {} bytes", read);
+        let data = core::slice::from_raw_parts_mut(buf, read as usize);
+        println!("{:x?}", data);
     }
 
     read as i16

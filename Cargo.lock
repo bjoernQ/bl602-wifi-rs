@@ -74,7 +74,7 @@ name = "bl602wifi"
 version = "0.1.0"
 dependencies = [
  "bl602-hal",
- "bluetooth-hci",
+ "ble-hci",
  "embedded-time",
  "nb 1.0.0",
  "riscv",
@@ -83,15 +83,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "bluetooth-hci"
+name = "ble-hci"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ba8c2b20e8648a369c0c984201cdc1673917420f1f5e28cce90635048eeb1032"
-dependencies = [
- "bitflags",
- "byteorder",
- "nb 0.1.3",
-]
 
 [[package]]
 name = "byteorder"

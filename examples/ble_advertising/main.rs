@@ -7,11 +7,8 @@
 use core::{fmt::Write, mem::MaybeUninit};
 
 use bl602_hal as hal;
-use bluetooth_hci::{
-    host::{AdvertisingParameters, Channels},
-    BdAddr,
-};
-use core::{panic::PanicInfo, time::Duration};
+use ble_hci::{Ble, Data, acl::{encode_acl_packet, BoundaryFlag, HostBroadcastFlag}, ad_structure::{AdStructure, BR_EDR_NOT_SUPPORTED, LE_GENERAL_DISCOVERABLE, create_advertising_data}, att::{ATT_READ_BY_GROUP_TYPE_REQUEST_OPCODE, ATT_READ_BY_TYPE_REQUEST_OPCODE, AttErrorCode, AttributeData, AttributePayloadData, Uuid, att_encode_error_response, att_encode_read_by_group_type_response, att_encode_read_by_type_response, att_encode_read_response, att_encode_write_response, parse_att}, attribute_server::{ATT_READABLE, ATT_WRITEABLE, AttributeServer, Service}, l2cap::{encode_l2cap, parse_l2cap}};
+use core::panic::PanicInfo;
 use hal::{
     clock::{Strict, SysclkFreq, UART_PLL_FREQ},
     gpio::{Pin16, Pin7, Uart, Uart0Rx, Uart0Tx, UartMux0, UartMux7},
@@ -19,7 +16,6 @@ use hal::{
     prelude::*,
     serial::*,
 };
-use nb::block;
 
 use bl602_hal::timer::TimerExt;
 
@@ -33,12 +29,12 @@ static mut GLOBAL_SERIAL: MaybeUninit<
     >,
 > = MaybeUninit::uninit();
 
-use bl602wifi::timer::wifi_timer_init;
+use bl602wifi::log::set_writer;
 use bl602wifi::wifi::*;
 use bl602wifi::{ble::ble_init, println};
 use bl602wifi::{
-    ble::controller::{Bl602Event, BleController, BusError},
-    log::set_writer,
+    ble::{controller::BleConnector, send_hci},
+    timer::wifi_timer_init,
 };
 
 #[riscv_rt::entry]
@@ -85,50 +81,68 @@ fn main() -> ! {
 
     ble_init();
 
-    let mut ble_controller = BleController::new();
-    let hci = &mut ble_controller
-        as &mut dyn bluetooth_hci::host::uart::Hci<BusError, Bl602Event, BusError, VS = _>;
+    let connector = BleConnector {};
+    let mut ble = Ble::new(&connector);
 
-    block!(hci.reset()).unwrap();
-    let res = block!(hci.read()).unwrap();
-    println!("{:?}", res);
-
-    let params = AdvertisingParameters {
-        advertising_interval: bluetooth_hci::host::AdvertisingInterval::for_type(
-            bluetooth_hci::host::AdvertisingType::ConnectableUndirected,
+    println!("{:?}", ble.init());
+    println!("{:?}", ble.cmd_set_le_advertising_parameters());
+    println!(
+        "{:?}",
+        ble.cmd_set_le_advertising_data(
+            create_advertising_data(
+                &[
+                    AdStructure::Flags(LE_GENERAL_DISCOVERABLE|BR_EDR_NOT_SUPPORTED),
+                    AdStructure::ServiceUuids16(&[Uuid::Uuid16(0x1809)]),
+                    AdStructure::CompleteLocalName("BL602 BLE"),
+                ]
+            )            
         )
-        .with_range(Duration::from_millis(250), Duration::from_millis(500))
-        .unwrap(),
-        own_address_type: bluetooth_hci::host::OwnAddressType::Public,
-        peer_address: bluetooth_hci::BdAddrType::Random(BdAddr([0, 0, 0, 0, 0, 0])),
-        advertising_channel_map: Channels::CH_37,
-        advertising_filter_policy:
-            bluetooth_hci::host::AdvertisingFilterPolicy::AllowConnectionAndScan,
+    );
+    println!("{:?}", ble.cmd_set_le_advertise_enable(true));
+
+    println!("started advertising");
+
+    let mut rf = || Data::new(&[b'H',b'e',b'l',b'l',b'o',]);
+    let mut wf = |data: Data| {
+        println!("{:x?}", data.to_slice());
     };
-    block!(hci.le_set_advertising_parameters(&params)).unwrap();
-    let res = block!(hci.read()).unwrap();
-    println!("{:?}", res);
 
-    let data = [
-        0x02, 0x01, 0x06, 0x03, 0x03, 0x09, 0x18, 0x14, 0x09, 
-        0x42, 0x4C, 0x2D, 0x36, 0x30, 0x32, 0x20, 0x42, 0x6C, 0x65, 0x2D, 0x45, 0x78, 0x61, 0x6D, 0x70, 0x6C, 0x65, 0x21,  
-    ];
-    block!(hci.le_set_advertising_data(&data)).unwrap();
-    let res = block!(hci.read()).unwrap();
-    println!("{:?}", res);
+    let srv1 = Service::new(
+        Uuid::Uuid128([
+            0xC9, 0x15, 0x15, 0x96, 0x54, 0x56, 0x64, 0xB3, 0x38, 0x45, 0x26, 0x5D, 0xF1, 0x62,
+            0x6A, 0xA8,
+        ]),
+        ATT_READABLE | ATT_WRITEABLE,
+        &mut rf,
+        &mut wf,
+    );
 
-    block!(hci.le_set_advertise_enable(true)).unwrap();
-    let res = block!(hci.read()).unwrap();
-    println!("{:?}", res);
+    let mut rf2 = || Data::default();
+    let mut wf2 = |_data| {};
 
-    // loop {
-    //     let res = block!(hci.read());
-    //     println!("{:?}", res);
-    // }
+    let srv2 = Service::new(
+        Uuid::Uuid128([
+            0xC8, 0x15, 0x15, 0x96, 0x54, 0x56, 0x64, 0xB3, 0x38, 0x45, 0x26, 0x5D, 0xF1, 0x62,
+            0x6A, 0xA8,
+        ]),
+        ATT_WRITEABLE,
+        &mut rf2,
+        &mut wf2,
+    );
 
-    println!("done.");
+    let services = &mut [srv1, srv2];
+    let mut srv = AttributeServer::new(&mut ble, services);
 
-    loop {}
+    loop {
+        match srv.do_work() {
+            Ok(_) => (),
+            Err(err) => { println!("{:?}", err); },
+        }
+
+        for _ in 0..10000 {
+        }
+    }
+
 }
 
 #[export_name = "ExceptionHandler"]
