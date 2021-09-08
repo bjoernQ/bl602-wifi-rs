@@ -7,7 +7,7 @@
 use core::{fmt::Write, mem::MaybeUninit};
 
 use bl602_hal as hal;
-use ble_hci::{Ble, Data, acl::{encode_acl_packet, BoundaryFlag, HostBroadcastFlag}, ad_structure::{AdStructure, BR_EDR_NOT_SUPPORTED, LE_GENERAL_DISCOVERABLE, create_advertising_data}, att::{ATT_READ_BY_GROUP_TYPE_REQUEST_OPCODE, ATT_READ_BY_TYPE_REQUEST_OPCODE, AttErrorCode, AttributeData, AttributePayloadData, Uuid, att_encode_error_response, att_encode_read_by_group_type_response, att_encode_read_by_type_response, att_encode_read_response, att_encode_write_response, parse_att}, attribute_server::{ATT_READABLE, ATT_WRITEABLE, AttributeServer, Service}, l2cap::{encode_l2cap, parse_l2cap}};
+use ble_hci::{Ble, Data, ad_structure::{AdStructure, BR_EDR_NOT_SUPPORTED, LE_GENERAL_DISCOVERABLE, create_advertising_data}, att::{Uuid}, attribute_server::{ATT_READABLE, ATT_WRITEABLE, AttributeServer, Service}};
 use core::panic::PanicInfo;
 use hal::{
     clock::{Strict, SysclkFreq, UART_PLL_FREQ},
@@ -33,7 +33,7 @@ use bl602wifi::log::set_writer;
 use bl602wifi::wifi::*;
 use bl602wifi::{ble::ble_init, println};
 use bl602wifi::{
-    ble::{controller::BleConnector, send_hci},
+    ble::{controller::BleConnector},
     timer::wifi_timer_init,
 };
 
