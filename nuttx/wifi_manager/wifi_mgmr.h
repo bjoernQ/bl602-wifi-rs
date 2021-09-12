@@ -1,18 +1,16 @@
 #ifndef __WIFI_MGMR_H__
 #define __WIFI_MGMR_H__
 
-#include "wifi_driver/os_hal.h"
+#include "bl_os_adapter/bl_os_private.h"
 
 #include "wifi_manager/include/wifi_mgmr_ext.h"
 #include "wifi_manager/stateMachine.h"
-#include <nuttx/net/netdev.h>
 
 #define WIFI_MGMR_SCAN_ITEMS_MAX (50)
 #define WIFI_MGMR_PROFILES_MAX (1)
 #define WIFI_MGMR_MQ_MSG_SIZE (128 + 64 + 32)
 #define WIFI_MGMR_MQ_MSG_COUNT (1)
 
-#define WIFI_MGMR_DEFAULT_CLOCK_ID  0
 /**
  ****************************************************************************************
  *
@@ -26,6 +24,33 @@ enum EVENT_TYPE {
    EVENT_TYPE_FW,
    EVENT_TYPE_APP,
    EVENT_TYPE_GLB,
+};
+
+enum _WIFI_EVENT
+{
+  CODE_WIFI_ON_INIT_DONE = 1,
+  CODE_WIFI_ON_MGMR_DONE,
+  CODE_WIFI_CMD_RECONNECT,
+  CODE_WIFI_ON_CONNECTED,
+  CODE_WIFI_ON_DISCONNECT,
+  CODE_WIFI_ON_PRE_GOT_IP,
+  CODE_WIFI_ON_GOT_IP,
+  CODE_WIFI_ON_CONNECTING,
+  CODE_WIFI_ON_SCAN_DONE,
+  CODE_WIFI_ON_SCAN_DONE_ONJOIN,
+  CODE_WIFI_ON_AP_STARTED,
+  CODE_WIFI_ON_AP_STOPPED,
+  CODE_WIFI_ON_PROV_SSID,
+  CODE_WIFI_ON_PROV_BSSID,
+  CODE_WIFI_ON_PROV_PASSWD,
+  CODE_WIFI_ON_PROV_CONNECT,
+  CODE_WIFI_ON_PROV_DISCONNECT,
+  CODE_WIFI_ON_PROV_SCAN_START,
+  CODE_WIFI_ON_PROV_STATE_GET,
+  CODE_WIFI_ON_MGMR_DENOISE,
+  CODE_WIFI_ON_AP_STA_ADD,
+  CODE_WIFI_ON_AP_STA_DEL,
+  CODE_WIFI_ON_EMERGENCY_MAC,
 };
 
 typedef enum WIFI_MGMR_EVENT {
@@ -69,6 +94,7 @@ typedef enum WIFI_MGMR_EVENT {
     WIFI_MGMR_EVENT_GLB_DISABLE_AUTORECONNECT,
     WIFI_MGMR_EVENT_GLB_ENABLE_AUTORECONNECT,
     WIFI_MGMR_EVENT_GLB_IP_UPDATE,
+    WIFI_MGMR_EVENT_GLB_MGMR_WAKEUP,
 
 } WIFI_MGMR_EVENT_T;
 
@@ -102,15 +128,18 @@ typedef struct wifi_mgmr_profile_msg {
     char ssid[32];
     char ssid_tail[1];
     uint32_t ssid_len;
+    char passphr[64];
+    char passphr_tail[1];
     char psk[64];
     char psk_tail[1];
-    char pmk[64];
-    char pmk_tail[1];
+    uint32_t passphr_len;
     uint32_t psk_len;
-    uint32_t pmk_len;
-    uint8_t mac[6];
+
+    uint8_t bssid[6];
     uint8_t band;
     uint16_t freq;
+
+    int ap_info_ttl;
 } wifi_mgmr_profile_msg_t;
 
 typedef struct wifi_mgmr_ipgot_msg {
@@ -136,15 +165,18 @@ typedef struct wifi_mgmr_ap_msg {
 
 typedef struct wifi_mgmr_profile {
     uint16_t ssid_len;
+    uint16_t passphr_len;
     uint16_t psk_len;
-    uint16_t pmk_len;
-    uint8_t mac[6];
     char ssid[33];
     //uint8_t no_autoconnect;
+    char passphr[65];
     char psk[65];
-    char pmk[65];
+
+    uint8_t bssid[6];
     uint8_t band;
     uint16_t freq;
+    int ap_info_ttl;
+
     /*reserved field for wifi manager*/
     uint8_t priority;
     uint8_t isActive;
@@ -180,7 +212,8 @@ struct wlan_netif {
     int mode;//0: sta; 1: ap
     uint8_t vif_index;
     uint8_t mac[6];
-    uint8_t dhcp_started;
+    /* Customer Data */
+    void *opaque;
 
     union {
         struct {
@@ -189,14 +222,23 @@ struct wlan_netif {
     };
 };
 
+#define MAX_FIXED_CHANNELS_LIMIT (14)
+typedef struct wifi_mgmr_scan_params {
+    uint16_t channel_num;
+    uint16_t channels[MAX_FIXED_CHANNELS_LIMIT];
+    char ssid[32];
+    char ssid_end;
+} wifi_mgmr_scan_params_t;
+
 typedef struct wifi_mgmr_connect_ind_stat_info {
     uint16_t status_code;
+    uint16_t reason_code;
     uint16_t chan_freq;
     /*mgmr recv ind event from fw when connect or disconnect  */
 #define WIFI_MGMR_CONNECT_IND_STAT_INFO_TYPE_IND_CONNECTION (1)
 #define WIFI_MGMR_CONNECT_IND_STAT_INFO_TYPE_IND_DISCONNECTION (2)
     char ssid[32];
-    char psk[65];
+    char passphr[65];
     uint8_t bssid[6];
     uint8_t type_ind;
     uint8_t chan_band;
@@ -226,18 +268,30 @@ typedef struct wifi_mgmr {
 
     wifi_mgmr_scan_item_t scan_items[WIFI_MGMR_SCAN_ITEMS_MAX];
     //mqd_t mq;
-    struct file *mq_f;
+    void *mq_f;
     struct stateMachine m;
-    timer_t timer;
+    void *timer;
     wifi_mgmr_connect_ind_stat_info_t wifi_mgmr_stat_info;
     uint8_t ready;//TODO mgmr init process
     char country_code[3];
     uint8_t disable_autoreconnect;
+    uint16_t ap_bcn_int;
     int channel_nums;
 
+    int ap_info_ttl_curr;
+
     /*pending task*/
-    uint32_t pending_task;
-#define WIFI_MGMR_PENDING_TASK_SCAN_BIT     (1 << 0)
+    union {
+        uint32_t val;
+        struct {
+#define WIFI_MGMR_PENDING_TASK_SCAN_BIT      (1 << 0)
+#define WIFI_MGMR_PENDING_TASK_IP_UPDATE_BIT (1 << 1)
+#define WIFI_MGMR_PENDING_TASK_IP_GOT_BIT    (1 << 2)
+            unsigned int scan       :   1;
+            unsigned int ip_update  :   1;
+            unsigned int ip_got     :   1;
+        } bits;
+    } pending_task;
     /*Feature Bits*/
     uint32_t features;
 #define WIFI_MGMR_FEATURES_SCAN_SAVE_HIDDEN_SSID    (1 << 0)
@@ -265,6 +319,6 @@ int wifi_mgmr_api_fw_tsen_reload(void);
 
 static inline int wifi_mgmr_scan_item_is_timeout(wifi_mgmr_t *mgmr, wifi_mgmr_scan_item_t *item)
 {
-    return ((unsigned int)os_get_time_ms() - (unsigned int)item->timestamp_lastseen) >= mgmr->scan_item_timeout ? 1 : 0;
+    return ((unsigned int)g_bl_ops_funcs._get_time_ms() - (unsigned int)item->timestamp_lastseen) >= mgmr->scan_item_timeout ? 1 : 0;
 }
 #endif

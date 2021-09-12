@@ -1,7 +1,6 @@
 #![no_std]
 #![no_main]
 #![feature(c_variadic)]
-#![feature(const_raw_ptr_to_usize_cast)]
 
 #[allow(non_camel_case_types, non_snake_case)]
 use core::{fmt::Write, mem::MaybeUninit};
@@ -72,6 +71,8 @@ fn main() -> ! {
     wifi_timer_init(timers.channel0, dp.HBN);
 
     wifi_init();
+
+    for _ in 0..150000 {}
 
     let scan_result = wifi_scan();
 

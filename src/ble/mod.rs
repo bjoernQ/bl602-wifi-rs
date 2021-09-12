@@ -1,123 +1,25 @@
 use core::mem::MaybeUninit;
 
-use crate::{compat::common::StrBuf, log, println};
+use crate::compat::circbuf::{BtPacketType, BT_DRIVER, BT_RECEIVE_QUEUE};
 
 pub mod controller;
 
-static mut HCI_PIPE: MaybeUninit<HciPipe> = MaybeUninit::uninit();
 static mut BLE_INITIALIZED: bool = false;
 
 extern "C" {
     fn bl602_hci_uart_init(uartid: u8);
-    fn ble_hci_do_rx() -> i32;
-}
-
-// BL602 NuttX BLE works like this:
-// `initialize` will create a file /dev/ptmx and renames /dev/pts to /dev/ble
-// so the communication is via PTMX (see https://linux.die.net/man/4/ptmx)
-// We just simulate that here
-
-pub struct File {
-    _f_oflags: i32,      /* Open mode flags */
-    _f_pos: i64,         /* File position */
-    _f_inode: *const u8, /* Driver or file system interface */
-    _f_priv: *const u8,  /* Per file driver private data */
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn file_open(
-    _filep: &File,
-    path: *const u8,
-    _oflags: i32,
-    _args: ...
-) -> i32 {
-    let path = StrBuf::from(path);
-    log!("file_open {}", path.as_str_ref());
-    0
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn file_ioctl(_filep: &File, _req: i32, _args: ...) -> i32 {
-    log!("file_ioctl");
-    0
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn nxsched_get_streams() {
-    panic!("nxsched_get_streams is not implemented");
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn fprintf() {
-    panic!("fprintf is not implemented");
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn close() {
-    panic!("close is not implemented");
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn rename(oldpath: *const u8, newpath: *const u8) -> i32 {
-    let oldpath = StrBuf::from(oldpath);
-    let newpath = StrBuf::from(newpath);
-
-    log!("rename {} {}", oldpath.as_str_ref(), newpath.as_str_ref());
-
-    0
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn file_write(_filep: &File, buf: *mut u8, nbytes: i32) -> i16 {
-    println!("file_write {:p} {}", buf, nbytes);
-
-    let data = core::slice::from_raw_parts_mut(buf, nbytes as usize);
-    println!("{:x?}", data);
-
-    for i in 0..nbytes {
-        log!("{:x}", (*(buf.offset(i as isize))));
-    }
-
-    for i in 0..nbytes {
-        (*HCI_PIPE.as_mut_ptr()).controller_write(*(buf.offset(i as isize)));
-    }
-
-    nbytes as i16
-}
-
-// ssize_t file_read(FAR struct file *filep, FAR void *buf, size_t nbytes)
-#[no_mangle]
-pub unsafe extern "C" fn file_read(_filep: &File, buf: *mut u8, nbytes: i32) -> i16 {
-    let mut read = 0;
-    for i in 0..nbytes {
-        let r = (*HCI_PIPE.as_mut_ptr()).controller_read();
-
-        match r {
-            Some(b) => {
-                log!("got byte {:x}", b);
-                *(buf.offset(i as isize)) = b;
-                read += 1;
-            }
-            None => {
-                break;
-            }
-        }
-    }
-
-    if read > 0 {
-        println!("file_read read {} bytes", read);
-        let data = core::slice::from_raw_parts_mut(buf, read as usize);
-        println!("{:x?}", data);
-    }
-
-    read as i16
 }
 
 pub fn ble_init() {
     unsafe {
-        *(HCI_PIPE.as_mut_ptr()) = HciPipe::new();
+        *(HCI_OUT_COLLECTOR.as_mut_ptr()) = HciOutCollector::new();
 
         bl602_hci_uart_init(0);
+
+        if let Some(drv) = BT_DRIVER {
+            let open = (*drv).open.unwrap();
+            open(drv);
+        }
 
         riscv::interrupt::free(|_| {
             BLE_INITIALIZED = true;
@@ -126,29 +28,74 @@ pub fn ble_init() {
 }
 
 pub fn send_hci(data: &[u8]) {
-    for v in data {
+    let hci_out = unsafe { &mut *HCI_OUT_COLLECTOR.as_mut_ptr() };
+    hci_out.push(data);
+
+    if hci_out.is_ready() {
+        let packet = hci_out.packet();
+
+        let packet_type = match packet[0] {
+            1 => BtPacketType::BtCmd as u8,
+            2 => BtPacketType::BtAclOut as u8,
+            3 => BtPacketType::BtAclIn as u8,
+            4 => BtPacketType::BtEvt as u8,
+            _ => BtPacketType::BtCmd as u8,
+        };
+
         unsafe {
-            (*HCI_PIPE.as_mut_ptr()).host_write(*v);
+            if let Some(drv) = BT_DRIVER {
+                let send = (*drv).send.unwrap();
+
+                let data_ptr = packet as *const _ as *const u8;
+                let data_ptr = data_ptr.offset(1);
+                send(drv, packet_type, data_ptr, packet.len() - 1);
+            }
         }
+
+        hci_out.reset();
     }
 }
 
+static mut BLE_HCI_READ_DATA: [u8; 256] = [0u8; 256];
+static mut BLE_HCI_READ_DATA_INDEX: usize = 0;
+static mut BLE_HCI_READ_DATA_LEN: usize = 0;
+
 pub fn read_hci(data: &mut [u8]) -> usize {
-    let mut count = 0;
-    for v in data {
-        let r = unsafe { (*HCI_PIPE.as_mut_ptr()).host_read() };
-        match r {
-            Some(b) => {
-                *v = b;
-                count += 1;
+    unsafe {
+        if BLE_HCI_READ_DATA_LEN == 0 {
+            let dequeued = BT_RECEIVE_QUEUE.dequeue();
+            match dequeued {
+                Some(packet) => {
+                    for i in 0..(packet.len as usize + 1) {
+                        BLE_HCI_READ_DATA[i] = packet.data[i];
+                    }
+
+                    BLE_HCI_READ_DATA[0] = match packet.packet_type {
+                        1 /*BtPacketType::BT_EVT*/ => 4,
+                        3 /*BtPacketType::BT_ACL_IN*/ => 2,
+                        _ => 4,
+                    };
+
+                    BLE_HCI_READ_DATA_LEN = packet.len as usize + 1;
+                    BLE_HCI_READ_DATA_INDEX = 0;
+                }
+                None => (),
+            };
+        }
+
+        if BLE_HCI_READ_DATA_LEN > 0 {
+            data[0] = BLE_HCI_READ_DATA[BLE_HCI_READ_DATA_INDEX];
+            BLE_HCI_READ_DATA_INDEX += 1;
+
+            if BLE_HCI_READ_DATA_INDEX >= BLE_HCI_READ_DATA_LEN {
+                BLE_HCI_READ_DATA_LEN = 0;
+                BLE_HCI_READ_DATA_INDEX = 0;
             }
-            None => {
-                return count;
-            }
+            return 1;
         }
     }
 
-    count
+    0
 }
 
 pub extern "C" fn ble_worker() {
@@ -156,7 +103,7 @@ pub extern "C" fn ble_worker() {
         while !riscv::interrupt::free(|_| BLE_INITIALIZED) {}
 
         loop {
-            ble_hci_do_rx();
+            // TODO ??? ble_hci_do_rx();
             for _ in 0..20000 {}
         }
     }
@@ -256,5 +203,71 @@ impl HciPipe {
                 panic!("Buffer overflow in host_write");
             }
         })
+    }
+}
+
+static mut HCI_OUT_COLLECTOR: MaybeUninit<HciOutCollector> = MaybeUninit::uninit();
+
+#[derive(PartialEq, Debug)]
+enum HciOutType {
+    Unknown,
+    Acl,
+    Command,
+}
+
+struct HciOutCollector {
+    data: [u8; 256],
+    index: usize,
+    ready: bool,
+    kind: HciOutType,
+}
+
+impl HciOutCollector {
+    fn new() -> HciOutCollector {
+        HciOutCollector {
+            data: [0u8; 256],
+            index: 0,
+            ready: false,
+            kind: HciOutType::Unknown,
+        }
+    }
+
+    fn is_ready(&self) -> bool {
+        self.ready
+    }
+
+    fn push(&mut self, data: &[u8]) {
+        self.data[self.index..(self.index + data.len())].copy_from_slice(data);
+        self.index += data.len();
+
+        if self.kind == HciOutType::Unknown {
+            self.kind = match self.data[0] {
+                1 => HciOutType::Command,
+                2 => HciOutType::Acl,
+                _ => HciOutType::Unknown,
+            };
+        }
+
+        if !self.ready {
+            if self.kind == HciOutType::Command && self.index >= 4 {
+                if self.index == self.data[3] as usize + 4 {
+                    self.ready = true;
+                }
+            } else if self.kind == HciOutType::Acl && self.index >= 5 {
+                if self.index == (self.data[3] as usize) + ((self.data[4] as usize) << 8) + 5 {
+                    self.ready = true;
+                }
+            }
+        }
+    }
+
+    fn reset(&mut self) {
+        self.index = 0;
+        self.ready = false;
+        self.kind = HciOutType::Unknown;
+    }
+
+    fn packet(&self) -> &[u8] {
+        &self.data[0..(self.index as usize)]
     }
 }

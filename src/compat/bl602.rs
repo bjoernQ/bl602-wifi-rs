@@ -44,18 +44,20 @@ pub fn bl602_set_em_sel_bl602_glb_em_8kb() {
 
 #[no_mangle]
 pub unsafe extern "C" fn bl602_aon_pad_iesmt_cfg(pad_cfg: u8) {
-    log!("bl602_aon_pad_iesmt_cfg called {}", pad_cfg);
+    riscv::interrupt::free(|_| {
+        log!("bl602_aon_pad_iesmt_cfg called {}", pad_cfg);
 
-    const BL602_HBN_BASE: u32 = 0x4000f000;
-    const BL602_HBN_IRQ_MODE_OFFSET: u32 = 0x000014;
-    const BL602_HBN_IRQ_MODE: u32 = BL602_HBN_BASE + BL602_HBN_IRQ_MODE_OFFSET;
-    const HBN_IRQ_MODE_REG_AON_PAD_IE_SMT: u32 = 1 << 8;
+        const BL602_HBN_BASE: u32 = 0x4000f000;
+        const BL602_HBN_IRQ_MODE_OFFSET: u32 = 0x000014;
+        const BL602_HBN_IRQ_MODE: u32 = BL602_HBN_BASE + BL602_HBN_IRQ_MODE_OFFSET;
+        const HBN_IRQ_MODE_REG_AON_PAD_IE_SMT: u32 = 1 << 8;
 
-    let ptr = BL602_HBN_IRQ_MODE as *mut u32;
-    let mut regval = ptr.read_volatile();
-    regval &= HBN_IRQ_MODE_REG_AON_PAD_IE_SMT;
-    regval |= (pad_cfg as u32) << 8;
-    ptr.write_volatile(regval);
+        let ptr = BL602_HBN_IRQ_MODE as *mut u32;
+        let mut regval = ptr.read_volatile();
+        regval &= HBN_IRQ_MODE_REG_AON_PAD_IE_SMT;
+        regval |= (pad_cfg as u32) << 8;
+        ptr.write_volatile(regval);
+    });
 }
 
 #[no_mangle]

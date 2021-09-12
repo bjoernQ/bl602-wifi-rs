@@ -2,9 +2,8 @@ use embedded_time::duration::Milliseconds;
 use smoltcp::phy::{Device, DeviceCapabilities, RxToken, TxToken};
 use smoltcp::wire::EthernetAddress;
 
-use crate::binary::wifi_mgmr::{self, wifi_mgmr_drv_init, CODE_ON_GOT_IP};
+use crate::binary::wifi_mgmr::{self, wifi_mgmr_drv_init, _WIFI_EVENT_CODE_WIFI_ON_GOT_IP};
 use crate::binary::wifi_mgmr_api;
-use crate::compat::bl602::{bl602_set_em_sel_bl602_glb_em_8kb, hbn_config_aon_pad_input_and_smt};
 use crate::compat::common::EMULATED_TIMER;
 use crate::compat::{common::EmulatedTimer, get_time, work_queue::do_work};
 use crate::{binary::bl_wifi, compat::queue::SimpleQueue};
@@ -15,13 +14,13 @@ extern "C" {
 
     static mut __wifi_bss_end: u32;
 
+    pub fn bl_pm_init();
+
     pub fn wifi_main_init();
 
     pub fn ipc_emb_notify();
 
     pub fn wifi_mgmr_tsk_init();
-
-    pub fn bl602_ef_ctrl_read_mac_address(mac: &mut [u8; 6]);
 
     pub fn bl_free_rx_buffer(p: *const u8);
 
@@ -61,9 +60,9 @@ pub fn wifi_pre_init() {
         }
     }
 
-    hbn_config_aon_pad_input_and_smt();
+    // hbn_config_aon_pad_input_and_smt();
 
-    bl602_set_em_sel_bl602_glb_em_8kb();
+    // bl602_set_em_sel_bl602_glb_em_8kb();
 }
 
 pub fn wifi_init() {
@@ -75,7 +74,7 @@ pub fn wifi_init() {
     print!("\r\n");
 
     let mut conf = crate::binary::wifi_mgmr::wifi_conf_t {
-        country_code: [b'E', b'U', 0],
+        country_code: [b'C', b'N', 0],
         channel_nums: 13,
     };
 
@@ -87,6 +86,7 @@ pub fn wifi_init() {
         crate::binary::wifi_mgmr_api::wifi_mgmr_sta_ssid_set(&mut my_ssid as *mut _);
         crate::binary::wifi_mgmr_api::wifi_mgmr_sta_mac_set(&mut mac as *mut _);
 
+        bl_pm_init();
         wifi_main_init();
         ipc_emb_notify();
         wifi_mgmr_drv_init(&mut conf);
@@ -100,11 +100,20 @@ pub fn wifi_init() {
 }
 
 pub fn get_mac() -> [u8; 6] {
-    let mut mac = [0u8; 6];
     unsafe {
-        bl602_ef_ctrl_read_mac_address(&mut mac);
+        let mac_lo = (0x40007014 as *const u32).read_volatile();
+        let mac_hi = (0x40007018 as *const u32).read_volatile();
+
+        let mac = [
+            ((mac_hi & 0xff00) >> 8) as u8,
+            (mac_hi & 0xff) as u8,
+            ((mac_lo & 0xff000000) >> 24) as u8,
+            ((mac_lo & 0xff0000) >> 16) as u8,
+            ((mac_lo & 0xff00) >> 8) as u8,
+            (mac_lo & 0xff) as u8,
+        ];
+        mac
     }
-    mac
 }
 
 pub fn wifi_scan() -> core::result::Result<[Option<ScanItem>; 50], ()> {
@@ -132,10 +141,7 @@ pub fn connect_sta(arg_ssid: &str, arg_psk: &str) {
         wifi_mgmr_api::wifi_mgmr_api_connect(
             &mut ssid as *mut _,
             &mut psk as *mut _,
-            core::ptr::null_mut(),
-            core::ptr::null_mut(),
-            0,
-            0,
+            core::ptr::null_mut(), // &mut ext_param as *mut _,
         );
 
         while !WIFI_CONNECTED {
@@ -177,12 +183,12 @@ pub unsafe extern "C" fn bl602_netdev_free_txbuf(_buf: *mut u8) {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn bl602_net_event(evt: u32, val: u32) {
+pub unsafe extern "C" fn bl602_net_event(evt: i32, val: u32) {
     // evt e.g. CODE_WIFI_ON_CONNECTED, CODE_WIFI_ON_GOT_IP, ...
 
     println!("bl602_net_event called {} {}", evt, val);
 
-    if evt == CODE_ON_GOT_IP {
+    if evt == _WIFI_EVENT_CODE_WIFI_ON_GOT_IP {
         WIFI_CONNECTED = true;
     }
 }
@@ -400,7 +406,7 @@ pub fn trigger_transmit_if_needed() {
 pub extern "C" fn wifi_worker_task1() {
     unsafe {
         loop {
-            do_work();
+            do_work(1);
 
             riscv::interrupt::free(|_| {
                 for i in 0..EMULATED_TIMER.len() {
@@ -431,7 +437,7 @@ pub extern "C" fn wifi_worker_task1() {
 
 pub extern "C" fn wifi_worker_task2() {
     loop {
-        do_work();
+        do_work(0);
     }
 }
 

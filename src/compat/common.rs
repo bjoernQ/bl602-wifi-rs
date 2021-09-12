@@ -1,25 +1,8 @@
-use embedded_time::duration::Milliseconds;
-
-use crate::{binary::c_types::c_void, compat::get_time, log, print};
+use crate::{binary::c_types::c_void, log, print};
 use core::{ffi::VaListImpl, fmt::Write};
-
-use super::queue::SimpleQueue;
 
 static mut MUTEXES: [Option<*mut u8>; 1] = [None];
 pub static mut EMULATED_TIMER: [Option<EmulatedTimer>; 2] = [None; 2];
-
-#[repr(C)]
-#[derive(Debug)]
-pub struct timespec {
-    tv_sec: u32,
-    tv_nsec: u32,
-}
-
-#[repr(C)]
-pub struct itimerspec {
-    it_value: timespec,    /* First time */
-    it_interval: timespec, /* and thereafter */
-}
 
 pub struct StrBuf {
     buffer: [u8; 512],
@@ -105,69 +88,6 @@ pub unsafe extern "C" fn syslog(_priority: u32, mut args: ...) {
     print!("{}", res_str.as_str_ref());
 }
 
-#[repr(C)]
-pub struct sem {
-    semcount: i16,
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn sem_init(sem: *mut sem, pshared: i32, value: u32) -> i32 {
-    log!("sem_init called pshared={} value={}", pshared, value);
-
-    (*sem).semcount = value as i16;
-
-    0 // 0 = no error
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn sem_post(sem: *mut sem) -> i32 {
-    log!("sem_post called");
-
-    riscv::interrupt::free(|_| {
-        (*sem).semcount += 1;
-    });
-
-    0
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn sem_wait(sem: *mut sem) -> i32 {
-    log!("sem_wait called");
-
-    while riscv::interrupt::free(|_| (*sem).semcount) <= 0 {}
-
-    riscv::interrupt::free(|_| {
-        (*sem).semcount -= 1;
-    });
-
-    0
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn sem_timedwait(sem: *mut sem, abstime: *mut timespec) -> i32 {
-    log!("sem_timedwait called {:p} {:?}", sem, *abstime);
-
-    const ETIMEDOUT: i32 = 3447;
-
-    let ends_at = (*abstime).tv_sec * 1000;
-    while (*sem).semcount == 0 {
-        if get_time().0 >= ends_at {
-            return ETIMEDOUT;
-        }
-    }
-
-    (*sem).semcount -= 1;
-
-    0
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn sem_destroy(sem: *mut u8) -> i32 {
-    log!("sem_destroy called {:p}", sem);
-
-    0
-}
-
 #[no_mangle]
 pub unsafe extern "C" fn pthread_mutex_init(mutex: *mut u8, attr: *mut u8) -> i32 {
     log!("pthread_mutex_init called {:p} {:p}", mutex, attr);
@@ -220,19 +140,6 @@ pub unsafe extern "C" fn sleep(sec: u32) -> i32 {
     0
 }
 
-#[no_mangle]
-pub unsafe extern "C" fn clock_gettime(clk_id: u32, _ts: *mut timespec /* timespec */) -> i32 {
-    log!("clock_gettime called id={}", clk_id);
-
-    let t = get_time();
-    (*_ts).tv_sec = t.0 / 1000;
-    (*_ts).tv_nsec = 0;
-
-    log!("clock_gettime called, secs = {}", (*_ts).tv_sec);
-
-    0
-}
-
 #[repr(C)]
 pub union sigval {
     sival_int: i32,           /* Integer value */
@@ -270,206 +177,6 @@ pub struct EmulatedTimer {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn timer_create(clockid: u32, sevp: *mut sigevent, timerid: *mut u32) -> i32 {
-    log!("timer_create called {} {:p} {:p}", clockid, sevp, timerid);
-    log!("timer_create notify_fn={:p}", (*sevp).sigev_notify_function);
-
-    let mut free_idx = 0;
-    for &et in EMULATED_TIMER.iter() {
-        if et.is_some() {
-            free_idx += 1;
-        } else {
-            break;
-        }
-    }
-    if free_idx == EMULATED_TIMER.len() {
-        panic!("No more timers left");
-    }
-
-    *timerid = free_idx as u32;
-
-    EMULATED_TIMER[free_idx] = Some(EmulatedTimer {
-        notify_function: (*sevp).sigev_notify_function,
-        interval_secs: 0,
-        next_notify: 0,
-    });
-
-    0
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn timer_settime(
-    timerid: u32,
-    flags: u32,
-    new_value: *const itimerspec,
-    old_value: *const itimerspec,
-) -> i32 {
-    log!(
-        "timer_settime called {} {} {:p} {:p}",
-        timerid,
-        flags,
-        new_value,
-        old_value
-    );
-
-    log!(
-        "new_time sec/nsec {} {}",
-        (*new_value).it_value.tv_sec,
-        (*new_value).it_value.tv_nsec
-    );
-    log!(
-        "new_time interval sec/nsec {} {}",
-        (*new_value).it_interval.tv_sec,
-        (*new_value).it_interval.tv_nsec
-    );
-
-    EMULATED_TIMER[timerid as usize] = match &EMULATED_TIMER[timerid as usize] {
-        core::option::Option::Some(old) => Some(EmulatedTimer {
-            notify_function: old.notify_function,
-            interval_secs: (*new_value).it_interval.tv_sec,
-            next_notify: (*new_value).it_value.tv_sec * 1000,
-        }),
-        core::option::Option::None => None,
-    };
-
-    0
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn timer_delete(timerid: u32) -> i32 {
-    log!("timer_delete called {}", timerid);
-
-    EMULATED_TIMER[timerid as usize] = None;
-
-    0
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn file_mq_open() {
-    // just an empty stub
-
-    log!("file_mq_open called");
-}
-
-struct MqMessage {
-    data: [u8; 256],
-    len: usize,
-}
-
-static mut MESSAGES: SimpleQueue<MqMessage> = SimpleQueue::new();
-
-#[no_mangle]
-pub unsafe extern "C" fn file_mq_send(
-    mq: *const u8,
-    message: *const u8,
-    msglen: u32,
-    prio: u32,
-) -> i32 {
-    log!(
-        "file_mq_send called mq={:p} msglen={} prio={}",
-        mq,
-        msglen,
-        prio,
-    );
-
-    let mut data = [0u8; 256];
-    for i in 0..msglen as usize {
-        data[i] = *(message.offset(i as isize));
-    }
-
-    let msg = MqMessage {
-        data,
-        len: msglen as usize,
-    };
-
-    MESSAGES.enqueue(msg);
-
-    0
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn file_mq_timedsend() {
-    // just an empty stub
-
-    log!("file_mq_timedsend called");
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn file_mq_timedreceive(
-    mq: *const u8,
-    msg: *mut u8,
-    msglen: u32,
-    prio: *mut u32,
-    abstime: *const timespec,
-) -> i32 {
-    log!(
-        "file_mq_timedreceive called {:p} {:p} {} {:p}=>{} {:?}",
-        mq,
-        msg,
-        msglen,
-        prio,
-        *prio,
-        *abstime,
-    );
-
-    let mut received_bytes: i32 = 0;
-
-    let wait_end = Milliseconds::new((*abstime).tv_sec * 1000 + 1000);
-    while MESSAGES.is_empty() {
-        if get_time() > wait_end {
-            break;
-        }
-    }
-
-    match MESSAGES.dequeue() {
-        core::option::Option::Some(message) => {
-            for i in 0..message.len {
-                *(msg.offset(i as isize)) = message.data[i];
-            }
-
-            log!("copied message with len {}", message.len);
-
-            received_bytes = message.len as i32;
-        }
-        core::option::Option::None => {}
-    };
-
-    received_bytes
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn mq_open(mq_name: *const u8, oflags: i32, ...) -> i32 {
-    let strbuf = StrBuf::from(mq_name);
-    log!("mq_open called {} {}", strbuf.as_str_ref(), oflags);
-
-    42
-}
-
-static FAKE_FILE: [u8; 0] = [0; 0];
-
-#[no_mangle]
-pub unsafe extern "C" fn fs_getfilep(fd: i32, filep: *mut *const u8) -> i32 {
-    log!("fs_getfilep called fd:{}", fd);
-
-    // probably not necessary - seems the code in the blob doesn't really care
-    *filep = &FAKE_FILE as *const _ as *const u8;
-
-    0
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn _assert(filename: *const u8, line: u32) {
-    let strbuf = StrBuf::from(filename);
-    log!("_assert called {}:{}", strbuf.as_str_ref(), line);
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn g_system_timer() {
-    log!("g_system_timer called");
-    unimplemented!("g_system_timer");
-}
-
-#[no_mangle]
 pub unsafe extern "C" fn printf(s: *const u8, args: ...) {
     log!("printf called");
 
@@ -495,7 +202,7 @@ pub unsafe extern "C" fn snprintf(dst: *mut u8, n: u32, format: *const u8, args:
     vsnprintf(dst, n, format, args);
 }
 
-unsafe fn vsnprintf(dst: *mut u8, _n: u32, format: *const u8, mut args: VaListImpl) {
+pub(crate) unsafe fn vsnprintf(dst: *mut u8, _n: u32, format: *const u8, mut args: VaListImpl) {
     let fmt_str_ptr = format;
 
     let mut res_str = StrBuf::new();
@@ -600,18 +307,19 @@ pub unsafe extern "C" fn puts(s: *const u8) {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn zalloc() {
-    log!("zalloc called");
-
-    unimplemented!("zalloc");
+pub unsafe extern "C" fn zalloc(
+    size: crate::binary::c_types::c_uint,
+) -> *mut crate::binary::c_types::c_void {
+    crate::os_adapter::bl_os_zalloc(size)
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn __errno() {
-    log!("__errno called");
-
-    unimplemented!("__errno");
+pub unsafe extern "C" fn __errno() -> *mut i32 {
+    log!("__errno called - not implemented");
+    &mut ERRNO
 }
+
+static mut ERRNO: i32 = 0;
 
 #[no_mangle]
 pub unsafe extern "C" fn __truncdfsf2(a: f64) -> f32 {

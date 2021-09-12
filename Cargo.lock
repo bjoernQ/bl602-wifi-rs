@@ -85,7 +85,7 @@ dependencies = [
 [[package]]
 name = "ble-hci"
 version = "0.1.0"
-source = "git+https://github.com/bjoernQ/ble-hci#41ceabad6eee2f0c36a81e822a879da52ccba829"
+source = "git+https://github.com/bjoernQ/ble-hci#bd07cb74b4ef1aebcd31775185c6f499bb20c869"
 
 [[package]]
 name = "byteorder"

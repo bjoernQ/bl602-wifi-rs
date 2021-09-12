@@ -1,12 +1,18 @@
 OUTPUT_ARCH( "riscv" )
 
+PROVIDE(ble_controller_init, 1);
+
 __EM_SIZE = DEFINED(ble_controller_init) ? 8K : 0K;
+__RFTLV_SIZE_OFFSET = 1K;
+__RFTLV_SIZE_HOLE = 2K;
+__RFTLV_HEAD1_H = (0x46524C42); /* BLRF */
+__RFTLV_HEAD1_L = (0x41524150); /* PAPA */
 
 MEMORY
 {
     ROM       (rx)  : ORIGIN = 0x21015000, LENGTH = 44K
     /* ITCM      (wxa) : ORIGIN = 0x22008000, LENGTH = 48K */
-    DTCM      (wxa) : ORIGIN = 0x2200E000, LENGTH = (32K + 48K + 64K - 8K) /* itcm_32 + dtcm_48 + ocram_64 */
+    DTCM      (wxa) : ORIGIN = 0x42010000, LENGTH = (32K + 48K + 64K - 16K) /* itcm_32 + dtcm_48 + ocram_64 */
     XIP_FLASH (rwx) : ORIGIN = 0x23000000, LENGTH = 4M
     WIFI_RAM  (wxa) : ORIGIN = 0x42030000, LENGTH = (112K - 8K) /* 8K left for em */
 }
@@ -56,14 +62,27 @@ PROVIDE(_mp_hook = default_mp_hook);
 
 SECTIONS
 {
-  .text.dummy (NOLOAD) :
+  
+  .init           :
   {
-    /* This section is intended to make _stext address work */
-    . = ABSOLUTE(_stext);
+    KEEP (*(SORT_NONE(.init)))
   } > REGION_TEXT
 
-  .text _stext :
+  .rftlv.tool :
   {
+      . = ORIGIN(REGION_TEXT) + __RFTLV_SIZE_OFFSET;
+      PROVIDE( _ld_symbol_rftlv_address = . );
+      LONG(__RFTLV_HEAD1_H);
+      LONG(__RFTLV_HEAD1_L);
+      . = ORIGIN(REGION_TEXT) + __RFTLV_SIZE_OFFSET + __RFTLV_SIZE_HOLE;
+  } > REGION_TEXT
+
+  .text :
+  {
+    PROVIDE(_stext = .);
+    *(.text.unlikely .text.unlikely.*)
+    *(.text.startup .text.startup.*)
+
     /* Put reset handler first in .text section so it ends up as the entry */
     /* point of the program. */
     KEEP(*(.init));
@@ -72,8 +91,6 @@ SECTIONS
     (*(.trap));
     (*(.trap.rust));
 
-    *(.text.unlikely .text.unlikely.*)
-    *(.text.startup .text.startup.*)
 
     *(.text .text.*);
   } > REGION_TEXT

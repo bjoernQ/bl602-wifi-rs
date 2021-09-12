@@ -127,43 +127,120 @@ pub const WCHAR_MIN: u32 = 0;
 pub const WCHAR_MAX: u32 = 65535;
 pub const WINT_MIN: u32 = 0;
 pub const WINT_MAX: u32 = 65535;
-pub const WIFI_MGMR_DEFAULT_CLOCK_ID: u32 = 0;
-pub const WIFI_MGMR_CMD_QUEUE_NAME: &'static [u8; 6usize] = b"/wlmq\0";
-pub const CODE_WIFI_ON_INIT_DONE: u32 = 1;
-pub const CODE_WIFI_ON_MGMR_DONE: u32 = 2;
-pub const CODE_WIFI_CMD_RECONNECT: u32 = 3;
-pub const CODE_WIFI_ON_CONNECTED: u32 = 4;
-pub const CODE_WIFI_ON_DISCONNECT: u32 = 5;
-pub const CODE_WIFI_ON_PRE_GOT_IP: u32 = 6;
-pub const CODE_WIFI_ON_GOT_IP: u32 = 7;
-pub const CODE_WIFI_ON_CONNECTING: u32 = 8;
-pub const CODE_WIFI_ON_SCAN_DONE: u32 = 9;
-pub const CODE_WIFI_ON_SCAN_DONE_ONJOIN: u32 = 10;
-pub const CODE_WIFI_ON_AP_STARTED: u32 = 11;
-pub const CODE_WIFI_ON_AP_STOPPED: u32 = 12;
-pub const CODE_WIFI_ON_PROV_SSID: u32 = 13;
-pub const CODE_WIFI_ON_PROV_BSSID: u32 = 14;
-pub const CODE_WIFI_ON_PROV_PASSWD: u32 = 15;
-pub const CODE_WIFI_ON_PROV_CONNECT: u32 = 16;
-pub const CODE_WIFI_ON_PROV_DISCONNECT: u32 = 17;
-pub const CODE_WIFI_ON_PROV_SCAN_START: u32 = 18;
-pub const CODE_WIFI_ON_PROV_STATE_GET: u32 = 19;
-pub const CODE_WIFI_ON_MGMR_DENOISE: u32 = 20;
-pub const CODE_WIFI_ON_AP_STA_ADD: u32 = 21;
-pub const CODE_WIFI_ON_AP_STA_DEL: u32 = 22;
-pub const CODE_WIFI_ON_EMERGENCY_MAC: u32 = 23;
-pub const CODE_ON_DISCONNECT: u32 = 5;
-pub const CODE_ON_GOT_IP: u32 = 7;
-pub const true_: u32 = 1;
-pub const false_: u32 = 0;
+pub const _ARGMAX: u32 = 100;
+pub const _CRT_INT_MAX: u32 = 2147483647;
+pub const _CRT_FUNCTIONS_REQUIRED: u32 = 1;
+pub const _CRT_HAS_CXX17: u32 = 0;
+pub const _ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE: u32 = 1;
+pub const _CRT_BUILD_DESKTOP_APP: u32 = 1;
+pub const __STDC_SECURE_LIB__: u32 = 200411;
+pub const __GOT_SECURE_LIB__: u32 = 200411;
+pub const __STDC_WANT_SECURE_LIB__: u32 = 1;
+pub const _SECURECRT_FILL_BUFFER_PATTERN: u32 = 254;
+pub const _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES: u32 = 0;
+pub const _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES_COUNT: u32 = 0;
+pub const _CRT_SECURE_CPP_OVERLOAD_SECURE_NAMES: u32 = 1;
+pub const _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES_MEMORY: u32 = 0;
+pub const _CRT_SECURE_CPP_OVERLOAD_SECURE_NAMES_MEMORY: u32 = 0;
+pub const EPERM: u32 = 1;
+pub const ENOENT: u32 = 2;
+pub const ESRCH: u32 = 3;
+pub const EINTR: u32 = 4;
+pub const EIO: u32 = 5;
+pub const ENXIO: u32 = 6;
+pub const E2BIG: u32 = 7;
+pub const ENOEXEC: u32 = 8;
+pub const EBADF: u32 = 9;
+pub const ECHILD: u32 = 10;
+pub const EAGAIN: u32 = 11;
+pub const ENOMEM: u32 = 12;
+pub const EACCES: u32 = 13;
+pub const EFAULT: u32 = 14;
+pub const EBUSY: u32 = 16;
+pub const EEXIST: u32 = 17;
+pub const EXDEV: u32 = 18;
+pub const ENODEV: u32 = 19;
+pub const ENOTDIR: u32 = 20;
+pub const EISDIR: u32 = 21;
+pub const ENFILE: u32 = 23;
+pub const EMFILE: u32 = 24;
+pub const ENOTTY: u32 = 25;
+pub const EFBIG: u32 = 27;
+pub const ENOSPC: u32 = 28;
+pub const ESPIPE: u32 = 29;
+pub const EROFS: u32 = 30;
+pub const EMLINK: u32 = 31;
+pub const EPIPE: u32 = 32;
+pub const EDOM: u32 = 33;
+pub const EDEADLK: u32 = 36;
+pub const ENAMETOOLONG: u32 = 38;
+pub const ENOLCK: u32 = 39;
+pub const ENOSYS: u32 = 40;
+pub const ENOTEMPTY: u32 = 41;
+pub const EINVAL: u32 = 22;
+pub const ERANGE: u32 = 34;
+pub const EILSEQ: u32 = 42;
+pub const STRUNCATE: u32 = 80;
+pub const EDEADLOCK: u32 = 36;
+pub const EADDRINUSE: u32 = 100;
+pub const EADDRNOTAVAIL: u32 = 101;
+pub const EAFNOSUPPORT: u32 = 102;
+pub const EALREADY: u32 = 103;
+pub const EBADMSG: u32 = 104;
+pub const ECANCELED: u32 = 105;
+pub const ECONNABORTED: u32 = 106;
+pub const ECONNREFUSED: u32 = 107;
+pub const ECONNRESET: u32 = 108;
+pub const EDESTADDRREQ: u32 = 109;
+pub const EHOSTUNREACH: u32 = 110;
+pub const EIDRM: u32 = 111;
+pub const EINPROGRESS: u32 = 112;
+pub const EISCONN: u32 = 113;
+pub const ELOOP: u32 = 114;
+pub const EMSGSIZE: u32 = 115;
+pub const ENETDOWN: u32 = 116;
+pub const ENETRESET: u32 = 117;
+pub const ENETUNREACH: u32 = 118;
+pub const ENOBUFS: u32 = 119;
+pub const ENODATA: u32 = 120;
+pub const ENOLINK: u32 = 121;
+pub const ENOMSG: u32 = 122;
+pub const ENOPROTOOPT: u32 = 123;
+pub const ENOSR: u32 = 124;
+pub const ENOSTR: u32 = 125;
+pub const ENOTCONN: u32 = 126;
+pub const ENOTRECOVERABLE: u32 = 127;
+pub const ENOTSOCK: u32 = 128;
+pub const ENOTSUP: u32 = 129;
+pub const EOPNOTSUPP: u32 = 130;
+pub const EOTHER: u32 = 131;
+pub const EOVERFLOW: u32 = 132;
+pub const EOWNERDEAD: u32 = 133;
+pub const EPROTO: u32 = 134;
+pub const EPROTONOSUPPORT: u32 = 135;
+pub const EPROTOTYPE: u32 = 136;
+pub const ETIME: u32 = 137;
+pub const ETIMEDOUT: u32 = 138;
+pub const ETXTBSY: u32 = 139;
+pub const EWOULDBLOCK: u32 = 140;
+pub const _NLSCMPERROR: u32 = 2147483647;
+pub const BL_OS_TRUE: u32 = 1;
+pub const BL_OS_FALSE: u32 = 0;
+pub const BL_OS_WAITING_FOREVER: u32 = 4294967295;
+pub const BL_OS_NO_WAITING: u32 = 0;
 pub const __bool_true_false_are_defined: u32 = 1;
+pub const false_: u32 = 0;
+pub const true_: u32 = 1;
 pub const WIFI_MGMR_SCAN_ITEMS_MAX: u32 = 50;
 pub const WIFI_MGMR_PROFILES_MAX: u32 = 1;
 pub const WIFI_MGMR_MQ_MSG_SIZE: u32 = 224;
 pub const WIFI_MGMR_MQ_MSG_COUNT: u32 = 1;
+pub const MAX_FIXED_CHANNELS_LIMIT: u32 = 14;
 pub const WIFI_MGMR_CONNECT_IND_STAT_INFO_TYPE_IND_CONNECTION: u32 = 1;
 pub const WIFI_MGMR_CONNECT_IND_STAT_INFO_TYPE_IND_DISCONNECTION: u32 = 2;
 pub const WIFI_MGMR_PENDING_TASK_SCAN_BIT: u32 = 1;
+pub const WIFI_MGMR_PENDING_TASK_IP_UPDATE_BIT: u32 = 2;
+pub const WIFI_MGMR_PENDING_TASK_IP_GOT_BIT: u32 = 4;
 pub const WIFI_MGMR_FEATURES_SCAN_SAVE_HIDDEN_SSID: u32 = 1;
 pub const WIFI_MGMR_CONFIG_SCAN_ITEM_TIMEOUT: u32 = 15000;
 pub const MAX_HOSTNAME_LEN_CHECK: u32 = 32;
@@ -204,31 +281,1088 @@ pub type uint_fast32_t = crate::binary::c_types::c_uint;
 pub type uint_fast64_t = crate::binary::c_types::c_ulonglong;
 pub type intmax_t = crate::binary::c_types::c_longlong;
 pub type uintmax_t = crate::binary::c_types::c_ulonglong;
+pub type __crt_bool = bool;
 extern "C" {
-    pub fn os_get_time_ms() -> u32;
+    pub fn _invalid_parameter_noinfo();
+}
+extern "C" {
+    pub fn _invalid_parameter_noinfo_noreturn();
+}
+extern "C" {
+    pub fn _invoke_watson(
+        _Expression: *const wchar_t,
+        _FunctionName: *const wchar_t,
+        _FileName: *const wchar_t,
+        _LineNo: crate::binary::c_types::c_uint,
+        _Reserved: usize,
+    );
+}
+pub type errno_t = crate::binary::c_types::c_int;
+pub type wint_t = crate::binary::c_types::c_ushort;
+pub type wctype_t = crate::binary::c_types::c_ushort;
+pub type __time32_t = crate::binary::c_types::c_long;
+pub type __time64_t = crate::binary::c_types::c_longlong;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct __crt_locale_data_public {
+    pub _locale_pctype: *const crate::binary::c_types::c_ushort,
+    pub _locale_mb_cur_max: crate::binary::c_types::c_int,
+    pub _locale_lc_codepage: crate::binary::c_types::c_uint,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct os_event {
-    pub type_: crate::binary::c_types::c_int,
-    pub value: *mut crate::binary::c_types::c_void,
+pub struct __crt_locale_pointers {
+    pub locinfo: *mut __crt_locale_data,
+    pub mbcinfo: *mut __crt_multibyte_data,
 }
-pub type os_event_t = *mut os_event;
+pub type _locale_t = *mut __crt_locale_pointers;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct _Mbstatet {
+    pub _Wchar: crate::binary::c_types::c_ulong,
+    pub _Byte: crate::binary::c_types::c_ushort,
+    pub _State: crate::binary::c_types::c_ushort,
+}
+pub type mbstate_t = _Mbstatet;
+pub type time_t = __time64_t;
+pub type rsize_t = size_t;
 extern "C" {
-    pub fn os_api_init() -> crate::binary::c_types::c_int;
+    pub fn _errno() -> *mut crate::binary::c_types::c_int;
 }
 extern "C" {
-    pub fn os_event_notify(arg1: os_event_t) -> crate::binary::c_types::c_int;
+    pub fn _set_errno(_Value: crate::binary::c_types::c_int) -> errno_t;
 }
 extern "C" {
-    pub fn os_lock_giant();
+    pub fn _get_errno(_Value: *mut crate::binary::c_types::c_int) -> errno_t;
 }
 extern "C" {
-    pub fn os_unlock_giant();
+    pub fn __threadid() -> crate::binary::c_types::c_ulong;
 }
 extern "C" {
-    pub fn msleep(msec: crate::binary::c_types::c_long) -> crate::binary::c_types::c_int;
+    pub fn __threadhandle() -> usize;
 }
+extern "C" {
+    pub fn __doserrno() -> *mut crate::binary::c_types::c_ulong;
+}
+extern "C" {
+    pub fn _set_doserrno(_Value: crate::binary::c_types::c_ulong) -> errno_t;
+}
+extern "C" {
+    pub fn _get_doserrno(_Value: *mut crate::binary::c_types::c_ulong) -> errno_t;
+}
+extern "C" {
+    pub fn memchr(
+        _Buf: *const crate::binary::c_types::c_void,
+        _Val: crate::binary::c_types::c_int,
+        _MaxCount: crate::binary::c_types::c_ulonglong,
+    ) -> *mut crate::binary::c_types::c_void;
+}
+extern "C" {
+    pub fn memcmp(
+        _Buf1: *const crate::binary::c_types::c_void,
+        _Buf2: *const crate::binary::c_types::c_void,
+        _Size: crate::binary::c_types::c_ulonglong,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn memcpy(
+        _Dst: *mut crate::binary::c_types::c_void,
+        _Src: *const crate::binary::c_types::c_void,
+        _Size: crate::binary::c_types::c_ulonglong,
+    ) -> *mut crate::binary::c_types::c_void;
+}
+extern "C" {
+    pub fn memmove(
+        _Dst: *mut crate::binary::c_types::c_void,
+        _Src: *const crate::binary::c_types::c_void,
+        _Size: crate::binary::c_types::c_ulonglong,
+    ) -> *mut crate::binary::c_types::c_void;
+}
+extern "C" {
+    pub fn memset(
+        _Dst: *mut crate::binary::c_types::c_void,
+        _Val: crate::binary::c_types::c_int,
+        _Size: crate::binary::c_types::c_ulonglong,
+    ) -> *mut crate::binary::c_types::c_void;
+}
+extern "C" {
+    pub fn strchr(
+        _Str: *const crate::binary::c_types::c_char,
+        _Val: crate::binary::c_types::c_int,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn strrchr(
+        _Str: *const crate::binary::c_types::c_char,
+        _Ch: crate::binary::c_types::c_int,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn strstr(
+        _Str: *const crate::binary::c_types::c_char,
+        _SubStr: *const crate::binary::c_types::c_char,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn wcschr(
+        _Str: *const crate::binary::c_types::c_ushort,
+        _Ch: crate::binary::c_types::c_ushort,
+    ) -> *mut crate::binary::c_types::c_ushort;
+}
+extern "C" {
+    pub fn wcsrchr(_Str: *const wchar_t, _Ch: wchar_t) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn wcsstr(_Str: *const wchar_t, _SubStr: *const wchar_t) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn _memicmp(
+        _Buf1: *const crate::binary::c_types::c_void,
+        _Buf2: *const crate::binary::c_types::c_void,
+        _Size: size_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _memicmp_l(
+        _Buf1: *const crate::binary::c_types::c_void,
+        _Buf2: *const crate::binary::c_types::c_void,
+        _Size: size_t,
+        _Locale: _locale_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn memccpy(
+        _Dst: *mut crate::binary::c_types::c_void,
+        _Src: *const crate::binary::c_types::c_void,
+        _Val: crate::binary::c_types::c_int,
+        _Size: size_t,
+    ) -> *mut crate::binary::c_types::c_void;
+}
+extern "C" {
+    pub fn memicmp(
+        _Buf1: *const crate::binary::c_types::c_void,
+        _Buf2: *const crate::binary::c_types::c_void,
+        _Size: size_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn wcscat_s(
+        _Destination: *mut wchar_t,
+        _SizeInWords: rsize_t,
+        _Source: *const wchar_t,
+    ) -> errno_t;
+}
+extern "C" {
+    pub fn wcscpy_s(
+        _Destination: *mut wchar_t,
+        _SizeInWords: rsize_t,
+        _Source: *const wchar_t,
+    ) -> errno_t;
+}
+extern "C" {
+    pub fn wcsncat_s(
+        _Destination: *mut wchar_t,
+        _SizeInWords: rsize_t,
+        _Source: *const wchar_t,
+        _MaxCount: rsize_t,
+    ) -> errno_t;
+}
+extern "C" {
+    pub fn wcsncpy_s(
+        _Destination: *mut wchar_t,
+        _SizeInWords: rsize_t,
+        _Source: *const wchar_t,
+        _MaxCount: rsize_t,
+    ) -> errno_t;
+}
+extern "C" {
+    pub fn wcstok_s(
+        _String: *mut wchar_t,
+        _Delimiter: *const wchar_t,
+        _Context: *mut *mut wchar_t,
+    ) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn _wcsdup(_String: *const wchar_t) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn wcscat(_Destination: *mut wchar_t, _Source: *const wchar_t) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn wcscmp(
+        _String1: *const crate::binary::c_types::c_ushort,
+        _String2: *const crate::binary::c_types::c_ushort,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn wcscpy(_Destination: *mut wchar_t, _Source: *const wchar_t) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn wcscspn(_String: *const wchar_t, _Control: *const wchar_t) -> size_t;
+}
+extern "C" {
+    pub fn wcslen(
+        _String: *const crate::binary::c_types::c_ushort,
+    ) -> crate::binary::c_types::c_ulonglong;
+}
+extern "C" {
+    pub fn wcsnlen(_Source: *const wchar_t, _MaxCount: size_t) -> size_t;
+}
+extern "C" {
+    pub fn wcsncat(
+        _Destination: *mut wchar_t,
+        _Source: *const wchar_t,
+        _Count: size_t,
+    ) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn wcsncmp(
+        _String1: *const crate::binary::c_types::c_ushort,
+        _String2: *const crate::binary::c_types::c_ushort,
+        _MaxCount: crate::binary::c_types::c_ulonglong,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn wcsncpy(
+        _Destination: *mut wchar_t,
+        _Source: *const wchar_t,
+        _Count: size_t,
+    ) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn wcspbrk(_String: *const wchar_t, _Control: *const wchar_t) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn wcsspn(_String: *const wchar_t, _Control: *const wchar_t) -> size_t;
+}
+extern "C" {
+    pub fn wcstok(
+        _String: *mut wchar_t,
+        _Delimiter: *const wchar_t,
+        _Context: *mut *mut wchar_t,
+    ) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn _wcserror(_ErrorNumber: crate::binary::c_types::c_int) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn _wcserror_s(
+        _Buffer: *mut wchar_t,
+        _SizeInWords: size_t,
+        _ErrorNumber: crate::binary::c_types::c_int,
+    ) -> errno_t;
+}
+extern "C" {
+    pub fn __wcserror(_String: *const wchar_t) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn __wcserror_s(
+        _Buffer: *mut wchar_t,
+        _SizeInWords: size_t,
+        _ErrorMessage: *const wchar_t,
+    ) -> errno_t;
+}
+extern "C" {
+    pub fn _wcsicmp(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _wcsicmp_l(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+        _Locale: _locale_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _wcsnicmp(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+        _MaxCount: size_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _wcsnicmp_l(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+        _MaxCount: size_t,
+        _Locale: _locale_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _wcsnset_s(
+        _Destination: *mut wchar_t,
+        _SizeInWords: size_t,
+        _Value: wchar_t,
+        _MaxCount: size_t,
+    ) -> errno_t;
+}
+extern "C" {
+    pub fn _wcsnset(_String: *mut wchar_t, _Value: wchar_t, _MaxCount: size_t) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn _wcsrev(_String: *mut wchar_t) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn _wcsset_s(_Destination: *mut wchar_t, _SizeInWords: size_t, _Value: wchar_t) -> errno_t;
+}
+extern "C" {
+    pub fn _wcsset(_String: *mut wchar_t, _Value: wchar_t) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn _wcslwr_s(_String: *mut wchar_t, _SizeInWords: size_t) -> errno_t;
+}
+extern "C" {
+    pub fn _wcslwr(_String: *mut wchar_t) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn _wcslwr_s_l(_String: *mut wchar_t, _SizeInWords: size_t, _Locale: _locale_t) -> errno_t;
+}
+extern "C" {
+    pub fn _wcslwr_l(_String: *mut wchar_t, _Locale: _locale_t) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn _wcsupr_s(_String: *mut wchar_t, _Size: size_t) -> errno_t;
+}
+extern "C" {
+    pub fn _wcsupr(_String: *mut wchar_t) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn _wcsupr_s_l(_String: *mut wchar_t, _Size: size_t, _Locale: _locale_t) -> errno_t;
+}
+extern "C" {
+    pub fn _wcsupr_l(_String: *mut wchar_t, _Locale: _locale_t) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn wcsxfrm(
+        _Destination: *mut wchar_t,
+        _Source: *const wchar_t,
+        _MaxCount: size_t,
+    ) -> size_t;
+}
+extern "C" {
+    pub fn _wcsxfrm_l(
+        _Destination: *mut wchar_t,
+        _Source: *const wchar_t,
+        _MaxCount: size_t,
+        _Locale: _locale_t,
+    ) -> size_t;
+}
+extern "C" {
+    pub fn wcscoll(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _wcscoll_l(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+        _Locale: _locale_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _wcsicoll(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _wcsicoll_l(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+        _Locale: _locale_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _wcsncoll(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+        _MaxCount: size_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _wcsncoll_l(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+        _MaxCount: size_t,
+        _Locale: _locale_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _wcsnicoll(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+        _MaxCount: size_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _wcsnicoll_l(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+        _MaxCount: size_t,
+        _Locale: _locale_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn wcsdup(_String: *const wchar_t) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn wcsicmp(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn wcsnicmp(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+        _MaxCount: size_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn wcsnset(_String: *mut wchar_t, _Value: wchar_t, _MaxCount: size_t) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn wcsrev(_String: *mut wchar_t) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn wcsset(_String: *mut wchar_t, _Value: wchar_t) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn wcslwr(_String: *mut wchar_t) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn wcsupr(_String: *mut wchar_t) -> *mut wchar_t;
+}
+extern "C" {
+    pub fn wcsicoll(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn strcpy_s(
+        _Destination: *mut crate::binary::c_types::c_char,
+        _SizeInBytes: rsize_t,
+        _Source: *const crate::binary::c_types::c_char,
+    ) -> errno_t;
+}
+extern "C" {
+    pub fn strcat_s(
+        _Destination: *mut crate::binary::c_types::c_char,
+        _SizeInBytes: rsize_t,
+        _Source: *const crate::binary::c_types::c_char,
+    ) -> errno_t;
+}
+extern "C" {
+    pub fn strerror_s(
+        _Buffer: *mut crate::binary::c_types::c_char,
+        _SizeInBytes: size_t,
+        _ErrorNumber: crate::binary::c_types::c_int,
+    ) -> errno_t;
+}
+extern "C" {
+    pub fn strncat_s(
+        _Destination: *mut crate::binary::c_types::c_char,
+        _SizeInBytes: rsize_t,
+        _Source: *const crate::binary::c_types::c_char,
+        _MaxCount: rsize_t,
+    ) -> errno_t;
+}
+extern "C" {
+    pub fn strncpy_s(
+        _Destination: *mut crate::binary::c_types::c_char,
+        _SizeInBytes: rsize_t,
+        _Source: *const crate::binary::c_types::c_char,
+        _MaxCount: rsize_t,
+    ) -> errno_t;
+}
+extern "C" {
+    pub fn strtok_s(
+        _String: *mut crate::binary::c_types::c_char,
+        _Delimiter: *const crate::binary::c_types::c_char,
+        _Context: *mut *mut crate::binary::c_types::c_char,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn _memccpy(
+        _Dst: *mut crate::binary::c_types::c_void,
+        _Src: *const crate::binary::c_types::c_void,
+        _Val: crate::binary::c_types::c_int,
+        _MaxCount: size_t,
+    ) -> *mut crate::binary::c_types::c_void;
+}
+extern "C" {
+    pub fn strcat(
+        _Destination: *mut crate::binary::c_types::c_char,
+        _Source: *const crate::binary::c_types::c_char,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn strcmp(
+        _Str1: *const crate::binary::c_types::c_char,
+        _Str2: *const crate::binary::c_types::c_char,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _strcmpi(
+        _String1: *const crate::binary::c_types::c_char,
+        _String2: *const crate::binary::c_types::c_char,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn strcoll(
+        _String1: *const crate::binary::c_types::c_char,
+        _String2: *const crate::binary::c_types::c_char,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _strcoll_l(
+        _String1: *const crate::binary::c_types::c_char,
+        _String2: *const crate::binary::c_types::c_char,
+        _Locale: _locale_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn strcpy(
+        _Destination: *mut crate::binary::c_types::c_char,
+        _Source: *const crate::binary::c_types::c_char,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn strcspn(
+        _Str: *const crate::binary::c_types::c_char,
+        _Control: *const crate::binary::c_types::c_char,
+    ) -> crate::binary::c_types::c_ulonglong;
+}
+extern "C" {
+    pub fn _strdup(
+        _Source: *const crate::binary::c_types::c_char,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn _strerror(
+        _ErrorMessage: *const crate::binary::c_types::c_char,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn _strerror_s(
+        _Buffer: *mut crate::binary::c_types::c_char,
+        _SizeInBytes: size_t,
+        _ErrorMessage: *const crate::binary::c_types::c_char,
+    ) -> errno_t;
+}
+extern "C" {
+    pub fn strerror(
+        _ErrorMessage: crate::binary::c_types::c_int,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn _stricmp(
+        _String1: *const crate::binary::c_types::c_char,
+        _String2: *const crate::binary::c_types::c_char,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _stricoll(
+        _String1: *const crate::binary::c_types::c_char,
+        _String2: *const crate::binary::c_types::c_char,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _stricoll_l(
+        _String1: *const crate::binary::c_types::c_char,
+        _String2: *const crate::binary::c_types::c_char,
+        _Locale: _locale_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _stricmp_l(
+        _String1: *const crate::binary::c_types::c_char,
+        _String2: *const crate::binary::c_types::c_char,
+        _Locale: _locale_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn strlen(
+        _Str: *const crate::binary::c_types::c_char,
+    ) -> crate::binary::c_types::c_ulonglong;
+}
+extern "C" {
+    pub fn _strlwr_s(_String: *mut crate::binary::c_types::c_char, _Size: size_t) -> errno_t;
+}
+extern "C" {
+    pub fn _strlwr(
+        _String: *mut crate::binary::c_types::c_char,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn _strlwr_s_l(
+        _String: *mut crate::binary::c_types::c_char,
+        _Size: size_t,
+        _Locale: _locale_t,
+    ) -> errno_t;
+}
+extern "C" {
+    pub fn _strlwr_l(
+        _String: *mut crate::binary::c_types::c_char,
+        _Locale: _locale_t,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn strncat(
+        _Destination: *mut crate::binary::c_types::c_char,
+        _Source: *const crate::binary::c_types::c_char,
+        _Count: crate::binary::c_types::c_ulonglong,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn strncmp(
+        _Str1: *const crate::binary::c_types::c_char,
+        _Str2: *const crate::binary::c_types::c_char,
+        _MaxCount: crate::binary::c_types::c_ulonglong,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _strnicmp(
+        _String1: *const crate::binary::c_types::c_char,
+        _String2: *const crate::binary::c_types::c_char,
+        _MaxCount: size_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _strnicmp_l(
+        _String1: *const crate::binary::c_types::c_char,
+        _String2: *const crate::binary::c_types::c_char,
+        _MaxCount: size_t,
+        _Locale: _locale_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _strnicoll(
+        _String1: *const crate::binary::c_types::c_char,
+        _String2: *const crate::binary::c_types::c_char,
+        _MaxCount: size_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _strnicoll_l(
+        _String1: *const crate::binary::c_types::c_char,
+        _String2: *const crate::binary::c_types::c_char,
+        _MaxCount: size_t,
+        _Locale: _locale_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _strncoll(
+        _String1: *const crate::binary::c_types::c_char,
+        _String2: *const crate::binary::c_types::c_char,
+        _MaxCount: size_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn _strncoll_l(
+        _String1: *const crate::binary::c_types::c_char,
+        _String2: *const crate::binary::c_types::c_char,
+        _MaxCount: size_t,
+        _Locale: _locale_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn __strncnt(_String: *const crate::binary::c_types::c_char, _Count: size_t) -> size_t;
+}
+extern "C" {
+    pub fn strncpy(
+        _Destination: *mut crate::binary::c_types::c_char,
+        _Source: *const crate::binary::c_types::c_char,
+        _Count: crate::binary::c_types::c_ulonglong,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn strnlen(_String: *const crate::binary::c_types::c_char, _MaxCount: size_t) -> size_t;
+}
+extern "C" {
+    pub fn _strnset_s(
+        _String: *mut crate::binary::c_types::c_char,
+        _SizeInBytes: size_t,
+        _Value: crate::binary::c_types::c_int,
+        _MaxCount: size_t,
+    ) -> errno_t;
+}
+extern "C" {
+    pub fn _strnset(
+        _Destination: *mut crate::binary::c_types::c_char,
+        _Value: crate::binary::c_types::c_int,
+        _Count: size_t,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn strpbrk(
+        _Str: *const crate::binary::c_types::c_char,
+        _Control: *const crate::binary::c_types::c_char,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn _strrev(
+        _Str: *mut crate::binary::c_types::c_char,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn _strset_s(
+        _Destination: *mut crate::binary::c_types::c_char,
+        _DestinationSize: size_t,
+        _Value: crate::binary::c_types::c_int,
+    ) -> errno_t;
+}
+extern "C" {
+    pub fn _strset(
+        _Destination: *mut crate::binary::c_types::c_char,
+        _Value: crate::binary::c_types::c_int,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn strspn(
+        _Str: *const crate::binary::c_types::c_char,
+        _Control: *const crate::binary::c_types::c_char,
+    ) -> crate::binary::c_types::c_ulonglong;
+}
+extern "C" {
+    pub fn strtok(
+        _String: *mut crate::binary::c_types::c_char,
+        _Delimiter: *const crate::binary::c_types::c_char,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn _strupr_s(_String: *mut crate::binary::c_types::c_char, _Size: size_t) -> errno_t;
+}
+extern "C" {
+    pub fn _strupr(
+        _String: *mut crate::binary::c_types::c_char,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn _strupr_s_l(
+        _String: *mut crate::binary::c_types::c_char,
+        _Size: size_t,
+        _Locale: _locale_t,
+    ) -> errno_t;
+}
+extern "C" {
+    pub fn _strupr_l(
+        _String: *mut crate::binary::c_types::c_char,
+        _Locale: _locale_t,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn strxfrm(
+        _Destination: *mut crate::binary::c_types::c_char,
+        _Source: *const crate::binary::c_types::c_char,
+        _MaxCount: crate::binary::c_types::c_ulonglong,
+    ) -> crate::binary::c_types::c_ulonglong;
+}
+extern "C" {
+    pub fn _strxfrm_l(
+        _Destination: *mut crate::binary::c_types::c_char,
+        _Source: *const crate::binary::c_types::c_char,
+        _MaxCount: size_t,
+        _Locale: _locale_t,
+    ) -> size_t;
+}
+extern "C" {
+    pub fn strdup(
+        _String: *const crate::binary::c_types::c_char,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn strcmpi(
+        _String1: *const crate::binary::c_types::c_char,
+        _String2: *const crate::binary::c_types::c_char,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn stricmp(
+        _String1: *const crate::binary::c_types::c_char,
+        _String2: *const crate::binary::c_types::c_char,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn strlwr(
+        _String: *mut crate::binary::c_types::c_char,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn strnicmp(
+        _String1: *const crate::binary::c_types::c_char,
+        _String2: *const crate::binary::c_types::c_char,
+        _MaxCount: size_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn strnset(
+        _String: *mut crate::binary::c_types::c_char,
+        _Value: crate::binary::c_types::c_int,
+        _MaxCount: size_t,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn strrev(
+        _String: *mut crate::binary::c_types::c_char,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn strset(
+        _String: *mut crate::binary::c_types::c_char,
+        _Value: crate::binary::c_types::c_int,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+extern "C" {
+    pub fn strupr(
+        _String: *mut crate::binary::c_types::c_char,
+    ) -> *mut crate::binary::c_types::c_char;
+}
+#[doc = " Private Types"]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bl_ops_funcs {
+    pub _version: crate::binary::c_types::c_int,
+    pub _printf: ::core::option::Option<
+        unsafe extern "C" fn(fmt: *const crate::binary::c_types::c_char, ...),
+    >,
+    pub _assert: ::core::option::Option<
+        unsafe extern "C" fn(
+            file: *const crate::binary::c_types::c_char,
+            line: crate::binary::c_types::c_int,
+            func: *const crate::binary::c_types::c_char,
+            expr: *const crate::binary::c_types::c_char,
+        ),
+    >,
+    pub _init: ::core::option::Option<unsafe extern "C" fn() -> crate::binary::c_types::c_int>,
+    pub _enter_critical: ::core::option::Option<unsafe extern "C" fn() -> u32>,
+    pub _exit_critical: ::core::option::Option<unsafe extern "C" fn(level: u32)>,
+    pub _msleep: ::core::option::Option<
+        unsafe extern "C" fn(ms: crate::binary::c_types::c_long) -> crate::binary::c_types::c_int,
+    >,
+    pub _sleep: ::core::option::Option<
+        unsafe extern "C" fn(
+            seconds: crate::binary::c_types::c_uint,
+        ) -> crate::binary::c_types::c_int,
+    >,
+    pub _event_group_create:
+        ::core::option::Option<unsafe extern "C" fn() -> *mut crate::binary::c_types::c_void>,
+    pub _event_group_delete:
+        ::core::option::Option<unsafe extern "C" fn(event: *mut crate::binary::c_types::c_void)>,
+    pub _event_group_send: ::core::option::Option<
+        unsafe extern "C" fn(event: *mut crate::binary::c_types::c_void, bits: u32) -> u32,
+    >,
+    pub _event_group_wait: ::core::option::Option<
+        unsafe extern "C" fn(
+            event: *mut crate::binary::c_types::c_void,
+            bits_to_wait_for: u32,
+            clear_on_exit: crate::binary::c_types::c_int,
+            wait_for_all_bits: crate::binary::c_types::c_int,
+            block_time_tick: u32,
+        ) -> u32,
+    >,
+    pub _event_register: ::core::option::Option<
+        unsafe extern "C" fn(
+            type_: crate::binary::c_types::c_int,
+            cb: *mut crate::binary::c_types::c_void,
+            arg: *mut crate::binary::c_types::c_void,
+        ) -> crate::binary::c_types::c_int,
+    >,
+    pub _event_notify: ::core::option::Option<
+        unsafe extern "C" fn(
+            evt: crate::binary::c_types::c_int,
+            val: crate::binary::c_types::c_int,
+        ) -> crate::binary::c_types::c_int,
+    >,
+    pub _task_create: ::core::option::Option<
+        unsafe extern "C" fn(
+            name: *const crate::binary::c_types::c_char,
+            entry: *mut crate::binary::c_types::c_void,
+            stack_depth: u32,
+            param: *mut crate::binary::c_types::c_void,
+            prio: u32,
+            task_handle: *mut crate::binary::c_types::c_void,
+        ) -> crate::binary::c_types::c_int,
+    >,
+    pub _task_delete: ::core::option::Option<
+        unsafe extern "C" fn(task_handle: *mut crate::binary::c_types::c_void),
+    >,
+    pub _task_get_current_task:
+        ::core::option::Option<unsafe extern "C" fn() -> *mut crate::binary::c_types::c_void>,
+    pub _task_notify_create:
+        ::core::option::Option<unsafe extern "C" fn() -> *mut crate::binary::c_types::c_void>,
+    pub _task_notify: ::core::option::Option<
+        unsafe extern "C" fn(task_handle: *mut crate::binary::c_types::c_void),
+    >,
+    pub _task_wait: ::core::option::Option<
+        unsafe extern "C" fn(task_handle: *mut crate::binary::c_types::c_void, tick: u32),
+    >,
+    pub _lock_gaint: ::core::option::Option<unsafe extern "C" fn()>,
+    pub _unlock_gaint: ::core::option::Option<unsafe extern "C" fn()>,
+    pub _irq_attach: ::core::option::Option<
+        unsafe extern "C" fn(
+            n: i32,
+            f: *mut crate::binary::c_types::c_void,
+            arg: *mut crate::binary::c_types::c_void,
+        ),
+    >,
+    pub _irq_enable: ::core::option::Option<unsafe extern "C" fn(n: i32)>,
+    pub _irq_disable: ::core::option::Option<unsafe extern "C" fn(n: i32)>,
+    pub _workqueue_create:
+        ::core::option::Option<unsafe extern "C" fn() -> *mut crate::binary::c_types::c_void>,
+    pub _workqueue_submit_hp: ::core::option::Option<
+        unsafe extern "C" fn(
+            work: *mut crate::binary::c_types::c_void,
+            woker: *mut crate::binary::c_types::c_void,
+            argv: *mut crate::binary::c_types::c_void,
+            tick: crate::binary::c_types::c_long,
+        ) -> crate::binary::c_types::c_int,
+    >,
+    pub _workqueue_submit_lp: ::core::option::Option<
+        unsafe extern "C" fn(
+            work: *mut crate::binary::c_types::c_void,
+            woker: *mut crate::binary::c_types::c_void,
+            argv: *mut crate::binary::c_types::c_void,
+            tick: crate::binary::c_types::c_long,
+        ) -> crate::binary::c_types::c_int,
+    >,
+    pub _timer_create: ::core::option::Option<
+        unsafe extern "C" fn(
+            func: *mut crate::binary::c_types::c_void,
+            argv: *mut crate::binary::c_types::c_void,
+        ) -> *mut crate::binary::c_types::c_void,
+    >,
+    pub _timer_delete: ::core::option::Option<
+        unsafe extern "C" fn(
+            timerid: *mut crate::binary::c_types::c_void,
+            tick: u32,
+        ) -> crate::binary::c_types::c_int,
+    >,
+    pub _timer_start_once: ::core::option::Option<
+        unsafe extern "C" fn(
+            timerid: *mut crate::binary::c_types::c_void,
+            t_sec: crate::binary::c_types::c_long,
+            t_nsec: crate::binary::c_types::c_long,
+        ) -> crate::binary::c_types::c_int,
+    >,
+    pub _timer_start_periodic: ::core::option::Option<
+        unsafe extern "C" fn(
+            timerid: *mut crate::binary::c_types::c_void,
+            t_sec: crate::binary::c_types::c_long,
+            t_nsec: crate::binary::c_types::c_long,
+        ) -> crate::binary::c_types::c_int,
+    >,
+    pub _sem_create: ::core::option::Option<
+        unsafe extern "C" fn(init: u32) -> *mut crate::binary::c_types::c_void,
+    >,
+    pub _sem_delete:
+        ::core::option::Option<unsafe extern "C" fn(semphr: *mut crate::binary::c_types::c_void)>,
+    pub _sem_take: ::core::option::Option<
+        unsafe extern "C" fn(semphr: *mut crate::binary::c_types::c_void, tick: u32) -> i32,
+    >,
+    pub _sem_give: ::core::option::Option<
+        unsafe extern "C" fn(semphr: *mut crate::binary::c_types::c_void) -> i32,
+    >,
+    pub _mutex_create:
+        ::core::option::Option<unsafe extern "C" fn() -> *mut crate::binary::c_types::c_void>,
+    pub _mutex_delete:
+        ::core::option::Option<unsafe extern "C" fn(mutex: *mut crate::binary::c_types::c_void)>,
+    pub _mutex_lock: ::core::option::Option<
+        unsafe extern "C" fn(mutex: *mut crate::binary::c_types::c_void) -> i32,
+    >,
+    pub _mutex_unlock: ::core::option::Option<
+        unsafe extern "C" fn(mutex: *mut crate::binary::c_types::c_void) -> i32,
+    >,
+    pub _queue_create: ::core::option::Option<
+        unsafe extern "C" fn(queue_len: u32, item_size: u32) -> *mut crate::binary::c_types::c_void,
+    >,
+    pub _queue_delete:
+        ::core::option::Option<unsafe extern "C" fn(queue: *mut crate::binary::c_types::c_void)>,
+    pub _queue_send_wait: ::core::option::Option<
+        unsafe extern "C" fn(
+            queue: *mut crate::binary::c_types::c_void,
+            item: *mut crate::binary::c_types::c_void,
+            len: u32,
+            ticks: u32,
+            prio: crate::binary::c_types::c_int,
+        ) -> crate::binary::c_types::c_int,
+    >,
+    pub _queue_send: ::core::option::Option<
+        unsafe extern "C" fn(
+            queue: *mut crate::binary::c_types::c_void,
+            item: *mut crate::binary::c_types::c_void,
+            len: u32,
+        ) -> crate::binary::c_types::c_int,
+    >,
+    pub _queue_recv: ::core::option::Option<
+        unsafe extern "C" fn(
+            queue: *mut crate::binary::c_types::c_void,
+            item: *mut crate::binary::c_types::c_void,
+            len: u32,
+            tick: u32,
+        ) -> crate::binary::c_types::c_int,
+    >,
+    pub _malloc: ::core::option::Option<
+        unsafe extern "C" fn(
+            size: crate::binary::c_types::c_uint,
+        ) -> *mut crate::binary::c_types::c_void,
+    >,
+    pub _free: ::core::option::Option<unsafe extern "C" fn(p: *mut crate::binary::c_types::c_void)>,
+    pub _zalloc: ::core::option::Option<
+        unsafe extern "C" fn(
+            size: crate::binary::c_types::c_uint,
+        ) -> *mut crate::binary::c_types::c_void,
+    >,
+    pub _get_time_ms: ::core::option::Option<unsafe extern "C" fn() -> u64>,
+    pub _get_tick: ::core::option::Option<unsafe extern "C" fn() -> u32>,
+    pub _log_write: ::core::option::Option<
+        unsafe extern "C" fn(
+            level: u32,
+            tag: *const crate::binary::c_types::c_char,
+            file: *const crate::binary::c_types::c_char,
+            line: crate::binary::c_types::c_int,
+            format: *const crate::binary::c_types::c_char,
+            ...
+        ),
+    >,
+}
+pub type bl_ops_funcs_t = bl_ops_funcs;
+extern "C" {
+    pub static mut g_bl_ops_funcs: bl_ops_funcs_t;
+}
+pub const _bl_os_log_leve_LOG_LEVEL_ALL: _bl_os_log_leve = 0;
+pub const _bl_os_log_leve_LOG_LEVEL_DEBUG: _bl_os_log_leve = 1;
+pub const _bl_os_log_leve_LOG_LEVEL_INFO: _bl_os_log_leve = 2;
+pub const _bl_os_log_leve_LOG_LEVEL_WARN: _bl_os_log_leve = 3;
+pub const _bl_os_log_leve_LOG_LEVEL_ERROR: _bl_os_log_leve = 4;
+pub const _bl_os_log_leve_LOG_LEVEL_ASSERT: _bl_os_log_leve = 5;
+pub const _bl_os_log_leve_LOG_LEVEL_NEVER: _bl_os_log_leve = 6;
+#[doc = " Definition"]
+pub type _bl_os_log_leve = crate::binary::c_types::c_int;
+pub use self::_bl_os_log_leve as bl_os_log_level_t;
+pub const ap_info_type_AP_INFO_TYPE_SUGGEST: ap_info_type = 0;
+pub const ap_info_type_AP_INFO_TYPE_PRESIST: ap_info_type = 1;
+pub type ap_info_type = crate::binary::c_types::c_int;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct ap_info {
+    pub type_: ap_info_type,
+    pub time_to_live: crate::binary::c_types::c_int,
+    pub bssid: *mut u8,
+    pub band: u8,
+    pub freq: u16,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct ap_connect_adv {
+    pub psk: *mut crate::binary::c_types::c_char,
+    pub ap_info: ap_info,
+}
+pub type ap_connect_adv_t = ap_connect_adv;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct wifi_mgmr_ap_item {
@@ -247,8 +1381,8 @@ pub struct wifi_mgmr_sta_connect_ind_stat_info {
     pub status_code: u16,
     pub type_ind: u8,
     pub ssid: [crate::binary::c_types::c_char; 32usize],
-    pub psk: [crate::binary::c_types::c_char; 65usize],
-    pub pmk: [crate::binary::c_types::c_char; 64usize],
+    pub passphr: [crate::binary::c_types::c_char; 65usize],
+    pub psk: [crate::binary::c_types::c_char; 64usize],
     pub bssid: [u8; 6usize],
     pub chan_freq: u16,
     pub chan_band: u8,
@@ -266,6 +1400,15 @@ pub struct wifi_sta_basic_info {
     pub data_rate: u8,
 }
 pub type wifi_sta_basic_info_t = wifi_sta_basic_info;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct wifi_sta_ps_conf {
+    #[doc = " num of beacons"]
+    pub listen_interval: crate::binary::c_types::c_int,
+    #[doc = "wifi active ms."]
+    pub wifi_active_period: u16,
+}
+pub type wifi_sta_ps_conf_t = wifi_sta_ps_conf;
 pub type wifi_interface_t = *mut crate::binary::c_types::c_void;
 pub type sniffer_cb_t = ::core::option::Option<
     unsafe extern "C" fn(
@@ -345,7 +1488,7 @@ extern "C" {
     pub fn wifi_mgmr_get_wifi_channel_conf(wifi_chan_conf: *mut wifi_conf_t);
 }
 extern "C" {
-    pub fn wifi_mgmr_sta_enable() -> wifi_interface_t;
+    pub fn wifi_mgmr_sta_enable(opaque: *mut crate::binary::c_types::c_void) -> wifi_interface_t;
 }
 extern "C" {
     pub fn wifi_mgmr_sta_disable(interface: *mut wifi_interface_t)
@@ -380,6 +1523,14 @@ extern "C" {
     pub fn wifi_mgmr_sta_ip_unset() -> crate::binary::c_types::c_int;
 }
 extern "C" {
+    pub fn wifi_mgmr_sta_connect_ext(
+        wifi_interface: *mut wifi_interface_t,
+        ssid: *mut crate::binary::c_types::c_char,
+        passphr: *mut crate::binary::c_types::c_char,
+        conn_adv_param: *const ap_connect_adv_t,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
     pub fn wifi_mgmr_sta_connect(
         wifi_interface: *mut wifi_interface_t,
         ssid: *mut crate::binary::c_types::c_char,
@@ -394,9 +1545,10 @@ extern "C" {
     pub fn wifi_mgmr_sta_disconnect() -> crate::binary::c_types::c_int;
 }
 extern "C" {
-    pub fn wifi_mgmr_sta_powersaving(
-        ps: crate::binary::c_types::c_int,
-    ) -> crate::binary::c_types::c_int;
+    pub fn wifi_mgmr_sta_ps_enter(ps_level: u32) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn wifi_mgmr_sta_ps_exit() -> crate::binary::c_types::c_int;
 }
 extern "C" {
     pub fn wifi_mgmr_sta_autoconnect_enable() -> crate::binary::c_types::c_int;
@@ -408,6 +1560,9 @@ extern "C" {
     pub fn wifi_mgmr_sta_ssid_set(ssid: *mut crate::binary::c_types::c_char);
 }
 extern "C" {
+    pub fn wifi_mgmr_sta_passphr_set(passphr: *mut crate::binary::c_types::c_char);
+}
+extern "C" {
     pub fn wifi_mgmr_sta_psk_set(psk: *mut crate::binary::c_types::c_char);
 }
 extern "C" {
@@ -416,7 +1571,7 @@ extern "C" {
     );
 }
 extern "C" {
-    pub fn wifi_mgmr_ap_enable() -> wifi_interface_t;
+    pub fn wifi_mgmr_ap_enable(opaque: *mut crate::binary::c_types::c_void) -> wifi_interface_t;
 }
 extern "C" {
     pub fn wifi_mgmr_ap_mac_set(mac: *mut u8) -> crate::binary::c_types::c_int;
@@ -527,6 +1682,23 @@ extern "C" {
     ) -> crate::binary::c_types::c_int;
 }
 extern "C" {
+    pub fn wifi_mgmr_scan_fixed_channels(
+        data: *mut crate::binary::c_types::c_void,
+        cb: scan_complete_cb_t,
+        channels: *mut u16,
+        channel_num: u16,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn wifi_mgmr_scan_adv(
+        data: *mut crate::binary::c_types::c_void,
+        cb: scan_complete_cb_t,
+        channels: *mut u16,
+        channel_num: u16,
+        ssid: *const crate::binary::c_types::c_char,
+    ) -> crate::binary::c_types::c_int;
+}
+extern "C" {
     pub fn wifi_mgmr_cfg_req(
         ops: u32,
         task: u32,
@@ -573,9 +1745,29 @@ extern "C" {
     pub fn wifi_mgmr_ext_dump_needed() -> crate::binary::c_types::c_int;
 }
 extern "C" {
+    pub fn wifi_mgmr_reset();
+}
+extern "C" {
     pub fn wifi_mgmr_status_code_str(status_code: u16) -> *const crate::binary::c_types::c_char;
 }
-pub type max_align_t = f64;
+extern "C" {
+    pub fn wifi_mgmr_beacon_interval_set(beacon_int: u16) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn wifi_mgmr_conn_result_get(status_code: *mut u16, reason_code: *mut u16);
+}
+extern "C" {
+    pub fn wifi_mgmr_set_wifi_active_time(ms: u32) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn wifi_mgmr_set_listen_interval(itv: u16) -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn wifi_mgmr_pm_ops_register() -> crate::binary::c_types::c_int;
+}
+extern "C" {
+    pub fn wifi_mgmr_fw_affair_ops() -> crate::binary::c_types::c_int;
+}
 #[doc = " \\brief Event"]
 #[doc = ""]
 #[doc = " Events trigger transitions from a state to another. Event types are defined"]
@@ -959,6 +2151,30 @@ pub const EVENT_TYPE_EVENT_TYPE_GLB: EVENT_TYPE = 2;
 #[doc = ""]
 #[doc = ""]
 pub type EVENT_TYPE = crate::binary::c_types::c_int;
+pub const _WIFI_EVENT_CODE_WIFI_ON_INIT_DONE: _WIFI_EVENT = 1;
+pub const _WIFI_EVENT_CODE_WIFI_ON_MGMR_DONE: _WIFI_EVENT = 2;
+pub const _WIFI_EVENT_CODE_WIFI_CMD_RECONNECT: _WIFI_EVENT = 3;
+pub const _WIFI_EVENT_CODE_WIFI_ON_CONNECTED: _WIFI_EVENT = 4;
+pub const _WIFI_EVENT_CODE_WIFI_ON_DISCONNECT: _WIFI_EVENT = 5;
+pub const _WIFI_EVENT_CODE_WIFI_ON_PRE_GOT_IP: _WIFI_EVENT = 6;
+pub const _WIFI_EVENT_CODE_WIFI_ON_GOT_IP: _WIFI_EVENT = 7;
+pub const _WIFI_EVENT_CODE_WIFI_ON_CONNECTING: _WIFI_EVENT = 8;
+pub const _WIFI_EVENT_CODE_WIFI_ON_SCAN_DONE: _WIFI_EVENT = 9;
+pub const _WIFI_EVENT_CODE_WIFI_ON_SCAN_DONE_ONJOIN: _WIFI_EVENT = 10;
+pub const _WIFI_EVENT_CODE_WIFI_ON_AP_STARTED: _WIFI_EVENT = 11;
+pub const _WIFI_EVENT_CODE_WIFI_ON_AP_STOPPED: _WIFI_EVENT = 12;
+pub const _WIFI_EVENT_CODE_WIFI_ON_PROV_SSID: _WIFI_EVENT = 13;
+pub const _WIFI_EVENT_CODE_WIFI_ON_PROV_BSSID: _WIFI_EVENT = 14;
+pub const _WIFI_EVENT_CODE_WIFI_ON_PROV_PASSWD: _WIFI_EVENT = 15;
+pub const _WIFI_EVENT_CODE_WIFI_ON_PROV_CONNECT: _WIFI_EVENT = 16;
+pub const _WIFI_EVENT_CODE_WIFI_ON_PROV_DISCONNECT: _WIFI_EVENT = 17;
+pub const _WIFI_EVENT_CODE_WIFI_ON_PROV_SCAN_START: _WIFI_EVENT = 18;
+pub const _WIFI_EVENT_CODE_WIFI_ON_PROV_STATE_GET: _WIFI_EVENT = 19;
+pub const _WIFI_EVENT_CODE_WIFI_ON_MGMR_DENOISE: _WIFI_EVENT = 20;
+pub const _WIFI_EVENT_CODE_WIFI_ON_AP_STA_ADD: _WIFI_EVENT = 21;
+pub const _WIFI_EVENT_CODE_WIFI_ON_AP_STA_DEL: _WIFI_EVENT = 22;
+pub const _WIFI_EVENT_CODE_WIFI_ON_EMERGENCY_MAC: _WIFI_EVENT = 23;
+pub type _WIFI_EVENT = crate::binary::c_types::c_int;
 pub const WIFI_MGMR_EVENT_WIFI_MGMR_EVENT_APP_IDLE: WIFI_MGMR_EVENT = 0;
 pub const WIFI_MGMR_EVENT_WIFI_MGMR_EVENT_APP_CONNECT: WIFI_MGMR_EVENT = 1;
 pub const WIFI_MGMR_EVENT_WIFI_MGMR_EVENT_APP_SNIFFER: WIFI_MGMR_EVENT = 2;
@@ -990,6 +2206,7 @@ pub const WIFI_MGMR_EVENT_WIFI_MGMR_EVENT_GLB_AP_IND_STA_DEL: WIFI_MGMR_EVENT = 
 pub const WIFI_MGMR_EVENT_WIFI_MGMR_EVENT_GLB_DISABLE_AUTORECONNECT: WIFI_MGMR_EVENT = 28;
 pub const WIFI_MGMR_EVENT_WIFI_MGMR_EVENT_GLB_ENABLE_AUTORECONNECT: WIFI_MGMR_EVENT = 29;
 pub const WIFI_MGMR_EVENT_WIFI_MGMR_EVENT_GLB_IP_UPDATE: WIFI_MGMR_EVENT = 30;
+pub const WIFI_MGMR_EVENT_WIFI_MGMR_EVENT_GLB_MGMR_WAKEUP: WIFI_MGMR_EVENT = 31;
 pub type WIFI_MGMR_EVENT = crate::binary::c_types::c_int;
 pub use self::WIFI_MGMR_EVENT as WIFI_MGMR_EVENT_T;
 pub const WIFI_MGMR_CONNECTION_STATUS_WIFI_MGMR_CONNECTION_STATUS_IDLE:
@@ -1002,7 +2219,7 @@ pub const WIFI_MGMR_CONNECTION_STATUS_WIFI_MGMR_CONNECTION_STATUS_CONNECTED_IP_N
     WIFI_MGMR_CONNECTION_STATUS = 3;
 pub const WIFI_MGMR_CONNECTION_STATUS_WIFI_MGMR_CONNECTION_STATUS_DISCONNECTED:
     WIFI_MGMR_CONNECTION_STATUS = 4;
-pub type WIFI_MGMR_CONNECTION_STATUS = u8;
+pub type WIFI_MGMR_CONNECTION_STATUS = crate::binary::c_types::c_int;
 pub use self::WIFI_MGMR_CONNECTION_STATUS as WIFI_MGMR_CONNECTION_STATUS_T;
 #[repr(C, packed)]
 pub struct wifi_mgmr_msg {
@@ -1029,15 +2246,16 @@ pub struct wifi_mgmr_profile_msg {
     pub ssid: [crate::binary::c_types::c_char; 32usize],
     pub ssid_tail: [crate::binary::c_types::c_char; 1usize],
     pub ssid_len: u32,
+    pub passphr: [crate::binary::c_types::c_char; 64usize],
+    pub passphr_tail: [crate::binary::c_types::c_char; 1usize],
     pub psk: [crate::binary::c_types::c_char; 64usize],
     pub psk_tail: [crate::binary::c_types::c_char; 1usize],
-    pub pmk: [crate::binary::c_types::c_char; 64usize],
-    pub pmk_tail: [crate::binary::c_types::c_char; 1usize],
+    pub passphr_len: u32,
     pub psk_len: u32,
-    pub pmk_len: u32,
-    pub mac: [u8; 6usize],
+    pub bssid: [u8; 6usize],
     pub band: u8,
     pub freq: u16,
+    pub ap_info_ttl: crate::binary::c_types::c_int,
 }
 pub type wifi_mgmr_profile_msg_t = wifi_mgmr_profile_msg;
 #[repr(C, packed)]
@@ -1067,14 +2285,15 @@ pub type wifi_mgmr_ap_msg_t = wifi_mgmr_ap_msg;
 #[derive(Copy, Clone)]
 pub struct wifi_mgmr_profile {
     pub ssid_len: u16,
+    pub passphr_len: u16,
     pub psk_len: u16,
-    pub pmk_len: u16,
-    pub mac: [u8; 6usize],
     pub ssid: [crate::binary::c_types::c_char; 33usize],
+    pub passphr: [crate::binary::c_types::c_char; 65usize],
     pub psk: [crate::binary::c_types::c_char; 65usize],
-    pub pmk: [crate::binary::c_types::c_char; 65usize],
+    pub bssid: [u8; 6usize],
     pub band: u8,
     pub freq: u16,
+    pub ap_info_ttl: crate::binary::c_types::c_int,
     pub priority: u8,
     pub isActive: u8,
     pub isUsed: u8,
@@ -1197,7 +2416,7 @@ pub struct wlan_netif {
     pub mode: crate::binary::c_types::c_int,
     pub vif_index: u8,
     pub mac: [u8; 6usize],
-    pub dhcp_started: u8,
+    pub opaque: *mut crate::binary::c_types::c_void,
     pub __bindgen_anon_1: wlan_netif__bindgen_ty_1,
 }
 #[repr(C)]
@@ -1212,11 +2431,21 @@ pub struct wlan_netif__bindgen_ty_1__bindgen_ty_1 {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
+pub struct wifi_mgmr_scan_params {
+    pub channel_num: u16,
+    pub channels: [u16; 14usize],
+    pub ssid: [crate::binary::c_types::c_char; 32usize],
+    pub ssid_end: crate::binary::c_types::c_char,
+}
+pub type wifi_mgmr_scan_params_t = wifi_mgmr_scan_params;
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct wifi_mgmr_connect_ind_stat_info {
     pub status_code: u16,
+    pub reason_code: u16,
     pub chan_freq: u16,
     pub ssid: [crate::binary::c_types::c_char; 32usize],
-    pub psk: [crate::binary::c_types::c_char; 65usize],
+    pub passphr: [crate::binary::c_types::c_char; 65usize],
     pub bssid: [u8; 6usize],
     pub type_ind: u8,
     pub chan_band: u8,
@@ -1245,18 +2474,90 @@ pub struct wifi_mgmr {
     pub profiles: [wifi_mgmr_profile_t; 1usize],
     pub profile_active_index: crate::binary::c_types::c_int,
     pub scan_items: [wifi_mgmr_scan_item_t; 50usize],
-    pub mq_f: *mut file,
+    pub mq_f: *mut crate::binary::c_types::c_void,
     pub m: stateMachine,
-    pub timer: crate::binary::c_types::c_int,
+    pub timer: *mut crate::binary::c_types::c_void,
     pub wifi_mgmr_stat_info: wifi_mgmr_connect_ind_stat_info_t,
     pub ready: u8,
     pub country_code: [crate::binary::c_types::c_char; 3usize],
     pub disable_autoreconnect: u8,
+    pub ap_bcn_int: u16,
     pub channel_nums: crate::binary::c_types::c_int,
-    pub pending_task: u32,
+    pub ap_info_ttl_curr: crate::binary::c_types::c_int,
+    pub pending_task: wifi_mgmr__bindgen_ty_1,
     pub features: u32,
     pub scan_item_timeout: crate::binary::c_types::c_int,
     pub hostname: [crate::binary::c_types::c_char; 32usize],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union wifi_mgmr__bindgen_ty_1 {
+    pub val: u32,
+    pub bits: wifi_mgmr__bindgen_ty_1__bindgen_ty_1,
+}
+#[repr(C)]
+#[repr(align(4))]
+#[derive(Copy, Clone)]
+pub struct wifi_mgmr__bindgen_ty_1__bindgen_ty_1 {
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
+    pub __bindgen_padding_0: [u8; 3usize],
+}
+impl wifi_mgmr__bindgen_ty_1__bindgen_ty_1 {
+    #[inline]
+    pub fn scan(&self) -> crate::binary::c_types::c_uint {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u32) }
+    }
+    #[inline]
+    pub fn set_scan(&mut self, val: crate::binary::c_types::c_uint) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn ip_update(&self) -> crate::binary::c_types::c_uint {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(1usize, 1u8) as u32) }
+    }
+    #[inline]
+    pub fn set_ip_update(&mut self, val: crate::binary::c_types::c_uint) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(1usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn ip_got(&self) -> crate::binary::c_types::c_uint {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(2usize, 1u8) as u32) }
+    }
+    #[inline]
+    pub fn set_ip_got(&mut self, val: crate::binary::c_types::c_uint) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(2usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(
+        scan: crate::binary::c_types::c_uint,
+        ip_update: crate::binary::c_types::c_uint,
+        ip_got: crate::binary::c_types::c_uint,
+    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+        __bindgen_bitfield_unit.set(0usize, 1u8, {
+            let scan: u32 = unsafe { ::core::mem::transmute(scan) };
+            scan as u64
+        });
+        __bindgen_bitfield_unit.set(1usize, 1u8, {
+            let ip_update: u32 = unsafe { ::core::mem::transmute(ip_update) };
+            ip_update as u64
+        });
+        __bindgen_bitfield_unit.set(2usize, 1u8, {
+            let ip_got: u32 = unsafe { ::core::mem::transmute(ip_got) };
+            ip_got as u64
+        });
+        __bindgen_bitfield_unit
+    }
 }
 pub type wifi_mgmr_t = wifi_mgmr;
 extern "C" {
@@ -1309,6 +2610,11 @@ extern "C" {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct file {
+pub struct __crt_locale_data {
+    pub _address: u8,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct __crt_multibyte_data {
     pub _address: u8,
 }

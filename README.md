@@ -43,6 +43,7 @@ Similar to _simple_ but no uses DHCP so no need to configure an IP address.
 ### Example: _ble_advertising_
 
 This starts BLE advertising. It should show up as _BL-602 Ble-Example!_ when scanning for Bluetooth devices.
+It's possible to connect to it and discover two services. One is read and writeable and one is just writeable.
 
 ## Implementation Notes
 
@@ -59,7 +60,7 @@ It uses one of the timers which can't be used for other things.
 - [ ] especially the code in `compat` can be improved
 - [ ] make it more stable
 - [ ] use a queue for tx for improved performance
-- [ ] update to latest blobs (for me they can not connect to all APs currently while the used one (1.6.19) can)
-- [ ] implement more BLE stack functionality (see https://github.com/danielgallagher0/bluenrg)
+- [ ] check why it has problems connect to some APs (this currently only connects to my Android device)
+- [ ] implement more BLE stack functionality
 
 and many more ...
