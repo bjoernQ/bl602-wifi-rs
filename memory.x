@@ -72,9 +72,12 @@ SECTIONS
   {
       . = ORIGIN(REGION_TEXT) + __RFTLV_SIZE_OFFSET;
       PROVIDE( _ld_symbol_rftlv_address = . );
+      /*
       LONG(__RFTLV_HEAD1_H);
       LONG(__RFTLV_HEAD1_L);
-      . = ORIGIN(REGION_TEXT) + __RFTLV_SIZE_OFFSET + __RFTLV_SIZE_HOLE;
+      */
+      INCLUDE "rfparams.ld" ;
+      /* . = ORIGIN(REGION_TEXT) + __RFTLV_SIZE_OFFSET + __RFTLV_SIZE_HOLE; */
   } > REGION_TEXT
 
   .text :
