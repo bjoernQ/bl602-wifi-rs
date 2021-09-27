@@ -60,7 +60,6 @@ It uses one of the timers which can't be used for other things.
 - [ ] especially the code in `compat` can be improved
 - [ ] make it more stable
 - [ ] use a queue for tx for improved performance
-- [ ] check why it has problems connect to some APs (this currently only connects to my Android device)
 - [ ] implement more BLE stack functionality
 
 and many more ...
