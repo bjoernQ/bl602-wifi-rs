@@ -18,7 +18,7 @@ static mut RTC: MaybeUninit<rtc::Rtc> = MaybeUninit::uninit();
 
 pub fn wifi_timer_init(channel0: TimerChannel0, hbn: HBN) {
     unsafe {
-        *(RTC.as_mut_ptr()) = rtc::Rtc::rtc(hbn);
+        *(RTC.as_mut_ptr()) = rtc::Rtc::new(hbn);
     }
 
     let ch0 = channel0.set_clock_source(ClockSource::Clock1Khz, 1_000u32.Hz());

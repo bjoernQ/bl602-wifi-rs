@@ -13,7 +13,7 @@ It uses the NuttX wifi blob from https://github.com/bouffalolab/bl_blob
 |Wifi Scan|Works|
 |Wifi Start Access Point|Doesn't work|
 |Wifi Automatic Reconnect|Not implemented yet|
-|BLE|HCI Communication works|
+|BLE|HCI Communication works and there is a minimal BLE stack|
 
 ## Examples
 
@@ -38,24 +38,25 @@ This scans for wifi networks.
 
 ### Example: _dhcp_
 
-Similar to _simple_ but no uses DHCP so no need to configure an IP address.
+Similar to _simple_ but uses DHCP - so no need to configure an IP address or gateway.
 
 ### Example: _ble_advertising_
 
-This starts BLE advertising. It should show up as _BL-602 Ble-Example!_ when scanning for Bluetooth devices.
-It's possible to connect to it and discover two services. One is read and writeable and one is just writeable.
+This starts BLE advertising. It should show up as _BL-602 BLE_ when scanning for Bluetooth devices.
+It's possible to connect to it and discover two services. One is read and writeable and one is just writeable. Read and write should also work.
 
 ## Implementation Notes
 
 This needs some modifications to the following crates (done in my forks referenced in `Cargo.toml`)
-- _riscv_ - needs support for ILP32F
 - _riscv-rt_ - needs support for ILP32F and initialization of the FPU
 
 Also it needs a very special linker script.
 
 It uses one of the timers which can't be used for other things.
 
-## Things to change
+You'll need nightly Rust. (I use `rustc 1.57.0-nightly (9bb77da74 2021-09-13)` currently)
+
+## Things to change / improve
 
 - [ ] especially the code in `compat` can be improved
 - [ ] make it more stable

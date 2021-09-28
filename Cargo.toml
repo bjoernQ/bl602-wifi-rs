@@ -6,9 +6,9 @@ edition = "2018"
 
 [dependencies]
 riscv-rt = "0.8.0"
-bl602-hal = { git = " https://github.com/sipeed/bl602-hal", rev = "a6cb8962b589d08f334821b12bb6c4c75d3f0e08" }
+bl602-hal = { git = " https://github.com/sipeed/bl602-hal", rev = "dfc9946e79ea4dac18be11efce11d0592a8517fb" }
 #panic-halt = "0.2.0"
-riscv =  "0.6.0"
+riscv =  "0.7.0"
 embedded-time = "0.12.0"
 nb = "1.0.0"
 smoltcp = { version = "0.7.3", default-features=false, features = ["proto-igmp", "proto-ipv4", "socket-tcp", "socket-icmp", "socket-udp", "ethernet", "proto-dhcpv4", "socket-raw"] }
@@ -19,5 +19,4 @@ ble-hci = { git = "https://github.com/bjoernQ/ble-hci" }
 debug = true
 
 [patch.crates-io]
-riscv = { git = "https://github.com/bjoernQ/riscv", branch = "support-ilp32f" }
 riscv-rt = { git = "https://github.com/bjoernQ/riscv-rt", branch = "support-ilp32f" }
