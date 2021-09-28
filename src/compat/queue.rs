@@ -15,15 +15,17 @@ impl<T> SimpleQueue<T> {
         }
     }
 
-    pub fn enqueue(&mut self, e: T) {
+    pub fn enqueue(&mut self, e: T) -> bool {
         self.data[self.write_index] = Some(e);
 
         self.write_index += 1;
         self.write_index %= QUEUE_SIZE;
 
         if self.write_index == self.read_index {
-            panic!("Queue overflow");
+            return false;
         }
+
+        true
     }
 
     pub fn dequeue(&mut self) -> Option<T> {

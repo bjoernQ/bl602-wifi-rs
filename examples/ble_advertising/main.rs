@@ -1,13 +1,19 @@
 #![no_std]
 #![no_main]
 #![feature(c_variadic)]
-#![feature(const_raw_ptr_to_usize_cast)]
 
 #[allow(non_camel_case_types, non_snake_case)]
 use core::{fmt::Write, mem::MaybeUninit};
 
 use bl602_hal as hal;
-use ble_hci::{Ble, Data, ad_structure::{AdStructure, BR_EDR_NOT_SUPPORTED, LE_GENERAL_DISCOVERABLE, create_advertising_data}, att::{Uuid}, attribute_server::{ATT_READABLE, ATT_WRITEABLE, AttributeServer, Service}};
+use ble_hci::{
+    ad_structure::{
+        create_advertising_data, AdStructure, BR_EDR_NOT_SUPPORTED, LE_GENERAL_DISCOVERABLE,
+    },
+    att::Uuid,
+    attribute_server::{AttributeServer, Service, ATT_READABLE, ATT_WRITEABLE},
+    Ble, Data,
+};
 use core::panic::PanicInfo;
 use hal::{
     clock::{Strict, SysclkFreq, UART_PLL_FREQ},
@@ -32,10 +38,7 @@ static mut GLOBAL_SERIAL: MaybeUninit<
 use bl602wifi::log::set_writer;
 use bl602wifi::wifi::*;
 use bl602wifi::{ble::ble_init, println};
-use bl602wifi::{
-    ble::{controller::BleConnector},
-    timer::wifi_timer_init,
-};
+use bl602wifi::{ble::controller::BleConnector, timer::wifi_timer_init};
 
 #[riscv_rt::entry]
 fn main() -> ! {
@@ -88,21 +91,17 @@ fn main() -> ! {
     println!("{:?}", ble.cmd_set_le_advertising_parameters());
     println!(
         "{:?}",
-        ble.cmd_set_le_advertising_data(
-            create_advertising_data(
-                &[
-                    AdStructure::Flags(LE_GENERAL_DISCOVERABLE|BR_EDR_NOT_SUPPORTED),
-                    AdStructure::ServiceUuids16(&[Uuid::Uuid16(0x1809)]),
-                    AdStructure::CompleteLocalName("BL602 BLE"),
-                ]
-            )            
-        )
+        ble.cmd_set_le_advertising_data(create_advertising_data(&[
+            AdStructure::Flags(LE_GENERAL_DISCOVERABLE | BR_EDR_NOT_SUPPORTED),
+            AdStructure::ServiceUuids16(&[Uuid::Uuid16(0x1809)]),
+            AdStructure::CompleteLocalName("BL602 BLE"),
+        ]))
     );
     println!("{:?}", ble.cmd_set_le_advertise_enable(true));
 
     println!("started advertising");
 
-    let mut rf = || Data::new(&[b'H',b'e',b'l',b'l',b'o',]);
+    let mut rf = || Data::new(&[b'H', b'e', b'l', b'l', b'o']);
     let mut wf = |data: Data| {
         println!("{:x?}", data.to_slice());
     };
@@ -136,13 +135,13 @@ fn main() -> ! {
     loop {
         match srv.do_work() {
             Ok(_) => (),
-            Err(err) => { println!("{:?}", err); },
+            Err(err) => {
+                println!("{:?}", err);
+            }
         }
 
-        for _ in 0..10000 {
-        }
+        for _ in 0..10000 {}
     }
-
 }
 
 #[export_name = "ExceptionHandler"]

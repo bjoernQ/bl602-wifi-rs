@@ -16,5 +16,6 @@ pub type c_ushort = u16;
 pub type c_schar = i8;
 pub type c_char = u8;
 pub type c_long = i32;
+pub type c_ulong = u32;
 
 pub enum c_void {}

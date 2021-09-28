@@ -17,9 +17,11 @@ macro_rules! log {
             #[allow(unused_unsafe)]
             unsafe {
                 if let Some(writer) = $crate::log::WRITER {
-                    let writer = writer();
-                    write!(writer, $($arg)*).ok();
-                    write!(writer, "\r\n").ok();
+                    riscv::interrupt::free(|_|{
+                        let writer = writer();
+                        write!(writer, $($arg)*).ok();
+                        write!(writer, "\r\n").ok();
+                    });
                 }
             };
         }

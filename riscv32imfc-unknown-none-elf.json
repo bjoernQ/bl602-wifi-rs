@@ -13,21 +13,5 @@
   "max-atomic-width": 32,
   "panic-strategy": "abort",
   "relocation-model": "static",
-  "target-pointer-width": "32",
-  "unsupported-abis": [
-    "cdecl",
-    "stdcall",
-    "stdcall-unwind",
-    "fastcall",
-    "vectorcall",
-    "thiscall",
-    "thiscall-unwind",
-    "aapcs",
-    "win64",
-    "sysv64",
-    "ptx-kernel",
-    "msp430-interrupt",
-    "x86-interrupt",
-    "amdgpu-kernel"
-  ]
+  "target-pointer-width": "32"
 }

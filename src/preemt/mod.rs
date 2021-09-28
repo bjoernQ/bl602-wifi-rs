@@ -4,7 +4,7 @@ use bl602_hal::interrupts::TrapFrame;
 pub struct Context {
     trap_frame: TrapFrame,
     pc: usize,
-    running: bool,
+    _running: bool,
 }
 
 const STACK_SIZE: usize = 8192;
@@ -53,7 +53,7 @@ pub static mut CTX_TASKS: [Context; MAX_TASK] = [Context {
         sp: 0,
     },
     pc: 0,
-    running: false,
+    _running: false,
 }; MAX_TASK];
 
 pub fn task_create(task: extern "C" fn()) -> usize {

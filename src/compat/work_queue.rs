@@ -17,7 +17,8 @@ pub struct work_s {
     delay: i64,        /* Delay until work performed */
 }
 
-static mut WORKER: SimpleQueue<extern "C" fn()> = SimpleQueue::new();
+static mut WORKER_HIGH: SimpleQueue<extern "C" fn()> = SimpleQueue::new();
+static mut WORKER_LOW: SimpleQueue<extern "C" fn()> = SimpleQueue::new();
 
 #[no_mangle]
 pub unsafe extern "C" fn work_queue(
@@ -29,20 +30,30 @@ pub unsafe extern "C" fn work_queue(
 ) -> i32 {
     log!("work_queue qid={} arg={:p} delay={}", qid, arg, delay);
 
-    riscv::interrupt::free(|_| {
-        WORKER.enqueue(worker);
-    });
+    if qid == 0 {
+        riscv::interrupt::free(|_| {
+            WORKER_HIGH.enqueue(worker);
+        });
+    } else {
+        riscv::interrupt::free(|_| {
+            WORKER_LOW.enqueue(worker);
+        });
+    }
 
     0
 }
 
-pub fn do_work() {
+pub fn do_work(qid: i32) {
     unsafe {
         let mut todo: [Option<extern "C" fn()>; 10] = [None; 10];
 
         riscv::interrupt::free(|_| {
             todo.iter_mut().for_each(|e| {
-                let work = WORKER.dequeue();
+                let work = if qid == 0 {
+                    WORKER_HIGH.dequeue()
+                } else {
+                    WORKER_LOW.dequeue()
+                };
                 match work {
                     Some(worker) => {
                         e.replace(worker);

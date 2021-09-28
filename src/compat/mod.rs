@@ -1,6 +1,7 @@
 use embedded_time::duration::Milliseconds;
 
 pub mod bl602;
+pub mod circbuf;
 pub mod common;
 pub mod malloc;
 pub mod queue;
