@@ -5,7 +5,7 @@
   "eh-frame-header": false,
   "emit-debug-gdb-scripts": false,
   "executables": true,
-  "features": "+m,+f,+c",
+  "features": "+m,+a,+f,+c",
   "linker": "rust-lld",
   "linker-flavor": "ld.lld",
   "llvm-abiname": "ilp32f",

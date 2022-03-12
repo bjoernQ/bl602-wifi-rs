@@ -322,17 +322,6 @@ pub unsafe extern "C" fn __errno() -> *mut i32 {
 static mut ERRNO: i32 = 0;
 
 #[no_mangle]
-pub unsafe extern "C" fn __truncdfsf2(a: f64) -> f32 {
-    log!("__truncdfsf2 called {}", a);
-
-    // WORLD'S DUMBEST WAY TO CONVERT A DOUBLE TO FLOAT
-    let mut str_buf = StrBuf::new();
-    write!(str_buf, "{}", a).ok();
-    let res = str_buf.as_str_ref().parse::<f32>().unwrap();
-    res
-}
-
-#[no_mangle]
 pub unsafe extern "C" fn strcmp(str1: *const u8, str2: *const u8) -> i32 {
     log!("strcmp called");
 
